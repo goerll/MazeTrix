@@ -15,7 +15,7 @@ const int WINDOW_SIZE = 800;
 const int NUM_OF_LINES = 20;
 const int CELL_SIZE = WINDOW_SIZE/NUM_OF_LINES;
 const int WALL_SIZE = 2;
-const int DELAY = 5;
+const int DELAY = 0;
 
 // Stuff
 sf::RectangleShape CELL_SQUARE({CELL_SIZE, CELL_SIZE});
@@ -122,12 +122,12 @@ class Maze{
             }
           }
 
-          //window->display();
           this->matrix[y][x].draw_cell(window, x*CELL_SIZE, y*CELL_SIZE);
+
+          window->display();
+
           sf::sleep(sf::milliseconds(DELAY));
         }
-        window->display();
-        window->clear(BG_COLOR);
       }
     }
 
