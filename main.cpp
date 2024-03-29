@@ -6,26 +6,26 @@
 #include <array>
 
 // Color variables
-const sf::Color NORD_DARK(46, 52, 64, 255);
+const sf::Color NORD_DARK(36, 36, 36, 255);
 const sf::Color NORD_WHITE(236, 239, 244, 255);
 const sf::Color NORD_BLUE(136, 192, 208, 255);
 
 // Size of stuff
 const int WINDOW_SIZE = 800;
 const int NUM_OF_LINES = 20;
-const int CELL_SIZE = WINDOW_SIZE/NUM_OF_LINES;
 const int WALL_SIZE = 2;
-const int DELAY = 0;
+const int CELL_SIZE = (WINDOW_SIZE/NUM_OF_LINES);
+const int DELAY = 5;
 
 // Stuff
-sf::RectangleShape CELL_SQUARE({CELL_SIZE, CELL_SIZE});
+sf::RectangleShape CELL_SQUARE({CELL_SIZE-(2*WALL_SIZE), CELL_SIZE-(2*WALL_SIZE)});
 sf::RectangleShape BORDER_VERTICAL({WALL_SIZE, CELL_SIZE});
-sf::RectangleShape BORDER_HORIZONTAL({CELL_SIZE, WALL_SIZE});
+sf::RectangleShape BORDER_HORIZONTAL({CELL_SIZE+(2*WALL_SIZE), WALL_SIZE});
 
 // Color of stuff
-const sf::Color BG_COLOR = sf::Color::Black;
+const sf::Color BG_COLOR = NORD_DARK;
 const sf::Color CELL_COLOR = NORD_DARK;
-const sf::Color BORDER_COLOR = NORD_BLUE;
+const sf::Color BORDER_COLOR = NORD_WHITE;
 const sf::Color HIGHLIGHT_COLOR = NORD_BLUE;
 const sf::Color BORDER_HIGHLIGHT_COLOR = CELL_COLOR;
 
@@ -51,7 +51,7 @@ class Cell{
     bool wall_right{true};
 
     void draw_cell(sf::RenderWindow* window, int x, int y){
-      CELL_SQUARE.setPosition(x, y);
+      CELL_SQUARE.setPosition(x+WALL_SIZE, y+WALL_SIZE);
       if(this->highlighted){
         CELL_SQUARE.setFillColor(HIGHLIGHT_COLOR);
         BORDER_HORIZONTAL.setFillColor(BORDER_HIGHLIGHT_COLOR);
@@ -66,11 +66,11 @@ class Cell{
       window->draw(CELL_SQUARE);
 
       if(wall_up){
-        BORDER_HORIZONTAL.setPosition(x, y);
+        BORDER_HORIZONTAL.setPosition(x-WALL_SIZE, y);
         window->draw(BORDER_HORIZONTAL);
       }
       if(wall_down){
-        BORDER_HORIZONTAL.setPosition(x, y+(CELL_SIZE-WALL_SIZE));
+        BORDER_HORIZONTAL.setPosition(x-WALL_SIZE, y+(CELL_SIZE-WALL_SIZE));
         window->draw(BORDER_HORIZONTAL);
       }
       if(wall_left){
