@@ -138,8 +138,38 @@ class Maze{
           neighbors.push_back(&(this->matrix[cell->y+1][cell->x]));
       }
 
+      if(neighbors.empty()){
+        return nullptr;
+      }
+
       int random_index = rand_num(0, neighbors.size()-1);
       return neighbors[random_index];
+    }
+
+    bool is_deadend(Cell* cell){
+
+      // Left neighbor
+      if(cell->x > 0){
+        if(this->matrix[cell->y][cell->x-1].active == false)
+          return false;
+      }
+      // Right neighbor
+      if(cell->x < NUM_OF_LINES - 1){
+        if(this->matrix[cell->y][cell->x+1].active == false)
+          return false;
+      }
+      // Up neighbor
+      if(cell->y > 0){
+        if(this->matrix[cell->y-1][cell->x].active == false)
+          return false;
+      }
+      // Down neighbor
+      if(cell->y < NUM_OF_LINES - 1){
+        if(this->matrix[cell->y+1][cell->x].active == false)
+          return false;
+      }
+
+      return true;
     }
 
     void mazefy_binary_tree(sf::RenderWindow* window){
@@ -175,8 +205,35 @@ class Maze{
     }
 
     void mazefy_recursive_backtracking(sf::RenderWindow* window, Cell* cell){
-      Cell* random_neighbor = this->random_neighbor(cell);
-    }
+      cell->active = true;
+      while(is_deadend(cell) == false){
+
+        Cell* neighbor = this->random_unvisited_neighbor(cell);
+
+        if(cell->x > neighbor->x){
+          cell->wall_left = false;
+          neighbor->wall_right = false;
+        }
+        else if(cell->x < neighbor->x){
+          cell->wall_right = false;
+          neighbor->wall_left = false;
+        }
+        else if(cell->y > neighbor->y){
+          cell->wall_up = false;
+          neighbor->wall_down = false;
+        }
+        else if(cell->y < neighbor->y){
+          cell->wall_down = false;
+          neighbor->wall_up = false;
+        }
+
+        cell->draw_cell(window, cell->x*CELL_SIZE, cell->y*CELL_SIZE);
+        neighbor->draw_cell(window, neighbor->x*CELL_SIZE, neighbor->y*CELL_SIZE);
+        window->display();
+
+        mazefy_recursive_backtracking(window, neighbor);
+      }
+    };
 };
 
 int main(){
@@ -185,7 +242,7 @@ int main(){
     window.clear(BG_COLOR);
 
     Maze maze;
-    maze.mazefy_binary_tree(&window);
+    maze.mazefy_recursive_backtracking(&window, &(maze.matrix[10][10]));
 
 
     while (window.isOpen())
