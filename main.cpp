@@ -4,6 +4,7 @@
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <random>
 #include <array>
+#include <vector>
 
 // Color variables
 const sf::Color NORD_DARK(36, 36, 36, 255);
@@ -12,10 +13,10 @@ const sf::Color NORD_BLUE(136, 192, 208, 255);
 
 // Size of stuff
 const int WINDOW_SIZE = 800;
-const int NUM_OF_LINES = 20;
+const int NUM_OF_LINES = 40;
 const int WALL_SIZE = 2;
 const int CELL_SIZE = (WINDOW_SIZE/NUM_OF_LINES);
-const int DELAY = 5;
+const int DELAY = 0;
 
 // Stuff
 sf::RectangleShape CELL_SQUARE({CELL_SIZE-(2*WALL_SIZE), CELL_SIZE-(2*WALL_SIZE)});
@@ -43,6 +44,9 @@ int rand_num(int start, int end) {
 // Cell class
 class Cell{
   public:
+    int x;
+    int y;
+
     bool active{false};
     bool highlighted{false};
     bool wall_up{true};
@@ -83,11 +87,21 @@ class Cell{
       }
 
     }
+
 };
 
 class Maze{
   public:
     std::array<std::array<Cell, NUM_OF_LINES>, NUM_OF_LINES> matrix;
+
+    Maze(){
+      for(int y = 0; y < NUM_OF_LINES; y++){
+        for(int x = 0; x < NUM_OF_LINES; x++){
+          matrix[y][x].x = x;
+          matrix[y][x].y = y;
+        }
+      }
+    }
 
     void draw(sf::RenderWindow* window){
       for(int y = 0; y < NUM_OF_LINES; y++){
@@ -97,6 +111,35 @@ class Maze{
           }
         }
       }
+    }
+
+    Cell* random_unvisited_neighbor(Cell* cell){
+      // Array to store neighbors
+      std::vector<Cell*> neighbors;
+
+      // Left neighbor
+      if(cell->x > 0){
+        if(this->matrix[cell->y][cell->x-1].active == false)
+          neighbors.push_back(&(this->matrix[cell->y][cell->x-1]));
+      }
+      // Right neighbor
+      if(cell->x < NUM_OF_LINES - 1){
+        if(this->matrix[cell->y][cell->x+1].active == false)
+          neighbors.push_back(&(this->matrix[cell->y][cell->x+1]));
+      }
+      // Up neighbor
+      if(cell->y > 0){
+        if(this->matrix[cell->y-1][cell->x].active == false)
+          neighbors.push_back(&(this->matrix[cell->y-1][cell->x]));
+      }
+      // Down neighbor
+      if(cell->y < NUM_OF_LINES - 1){
+        if(this->matrix[cell->y+1][cell->x].active == false)
+          neighbors.push_back(&(this->matrix[cell->y+1][cell->x]));
+      }
+
+      int random_index = rand_num(0, neighbors.size()-1);
+      return neighbors[random_index];
     }
 
     void mazefy_binary_tree(sf::RenderWindow* window){
@@ -131,11 +174,14 @@ class Maze{
       }
     }
 
+    void mazefy_recursive_backtracking(sf::RenderWindow* window, Cell* cell){
+      Cell* random_neighbor = this->random_neighbor(cell);
+    }
 };
 
 int main(){
     sf::RenderWindow window(sf::VideoMode(WINDOW_SIZE, WINDOW_SIZE), "MazeTrix");
-
+    window.setFramerateLimit(120);
     window.clear(BG_COLOR);
 
     Maze maze;
