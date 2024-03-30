@@ -1,1 +1,1 @@
-LD_LIBRARY_PATH=/home/$USER/MazeTrix/SFML-2.6.1/lib ./sfml-app
+LD_LIBRARY_PATH=./SFML-2.6.1/lib ./sfml-app
