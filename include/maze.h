@@ -10,8 +10,10 @@ public:
 
     Maze();
     void draw(sf::RenderWindow* window);
+    void clear();
     Cell* random_unvisited_neighbor(Cell* cell);
     bool is_dead_end(Cell* cell);
+    Cell* get_cell(float x, float y);
     void mazefy_binary_tree(sf::RenderWindow* window);
     void mazefy_depth_first_search(sf::RenderWindow* window, Cell* cell);
 };

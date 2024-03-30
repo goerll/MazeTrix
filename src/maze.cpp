@@ -22,6 +22,18 @@ void Maze::draw(sf::RenderWindow* window) {
     }
 }
 
+void Maze::clear(){
+    for (int y = 0; y < NUM_OF_LINES; y++) {
+        for (int x = 0; x < NUM_OF_LINES; x++) {
+            matrix[y][x].active = false;
+            matrix[y][x].wall_up = true;
+            matrix[y][x].wall_down = true;
+            matrix[y][x].wall_left = true;
+            matrix[y][x].wall_right = true;
+        }
+    }
+}
+
 // Get a cell's random unvisited neighbor
 Cell* Maze::random_unvisited_neighbor(Cell* cell) {
     // Array to store neighbors
@@ -80,6 +92,13 @@ bool Maze::is_dead_end(Cell* cell) {
     }
 
     return true;
+}
+
+Cell* Maze::get_cell(float x, float y){
+    float index_x = floor(x/CELL_SIZE);
+    float index_y = floor(y/CELL_SIZE);
+
+    return &(this->matrix[index_y][index_x]);
 }
 
 // Transform the matrix into a maze using the binary tree algorithm
