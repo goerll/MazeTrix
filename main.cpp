@@ -204,7 +204,7 @@ class Maze{
       }
     }
 
-    void mazefy_recursive_backtracking(sf::RenderWindow* window, Cell* cell){
+    void mazefy_depth_first_search(sf::RenderWindow* window, Cell* cell){
       cell->active = true;
       while(is_deadend(cell) == false){
 
@@ -231,7 +231,7 @@ class Maze{
         neighbor->draw_cell(window, neighbor->x*CELL_SIZE, neighbor->y*CELL_SIZE);
         window->display();
 
-        mazefy_recursive_backtracking(window, neighbor);
+        mazefy_depth_first_search(window, neighbor);
       }
     };
 };
@@ -242,7 +242,7 @@ int main(){
     window.clear(BG_COLOR);
 
     Maze maze;
-    maze.mazefy_recursive_backtracking(&window, &(maze.matrix[10][10]));
+    maze.mazefy_depth_first_search(&window, &(maze.matrix[10][10]));
 
 
     while (window.isOpen())
