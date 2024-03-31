@@ -1,5 +1,5 @@
 # MazeTrix
-
+https://github.com/goerll/MazeTrix/assets/90577512/56ea8d75-a5d1-4347-b075-9a6870f338ce
 
 # Logic behind the implementation
 Cells are objects that have booleans to describe their individual state: which walls are supposed to be displayed, if it's supposed to be highlighted and if it is currently active. The class has a member function that draws the cell considering it's state.
