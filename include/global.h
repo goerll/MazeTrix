@@ -10,7 +10,7 @@ const sf::Color NORD_BLUE(136, 192, 208, 255);
 
 // Size of stuff
 const int WINDOW_SIZE = 800;
-const int NUM_OF_LINES = 40;
+const int NUM_OF_LINES = 20;
 const int WALL_SIZE = 2;
 const int CELL_SIZE = WINDOW_SIZE / NUM_OF_LINES;
 const int DELAY = 0;

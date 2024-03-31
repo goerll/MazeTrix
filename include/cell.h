@@ -13,5 +13,5 @@ public:
     bool wall_left{ true };
     bool wall_right{ true };
 
-    void draw_cell(sf::RenderWindow* window, int x, int y);
+    void draw_cell(sf::RenderWindow* window);
 };

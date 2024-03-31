@@ -16,7 +16,7 @@ void Maze::draw(sf::RenderWindow* window) {
     for (int y = 0; y < NUM_OF_LINES; y++) {
         for (int x = 0; x < NUM_OF_LINES; x++) {
             if (this->matrix[y][x].active) {
-                this->matrix[y][x].draw_cell(window, x * CELL_SIZE, y * CELL_SIZE);
+                this->matrix[y][x].draw_cell(window);
             }
         }
     }
@@ -94,6 +94,7 @@ bool Maze::is_dead_end(Cell* cell) {
     return true;
 }
 
+// Returns the cell at specified window position
 Cell* Maze::get_cell(float x, float y){
     float index_x = floor(x/CELL_SIZE);
     float index_y = floor(y/CELL_SIZE);
@@ -114,7 +115,7 @@ void Maze::mazefy_binary_tree(sf::RenderWindow* window) {
                 this->matrix[y][x].wall_up = false;
                 if (y > 0) {
                     this->matrix[y - 1][x].wall_down = false;
-                    this->matrix[y - 1][x].draw_cell(window, x * CELL_SIZE, (y - 1) * CELL_SIZE);
+                    this->matrix[y - 1][x].draw_cell(window);
                 }
             }
 
@@ -122,12 +123,14 @@ void Maze::mazefy_binary_tree(sf::RenderWindow* window) {
                 this->matrix[y][x].wall_left = false;
                 if (x > 0) {
                     this->matrix[y][x - 1].wall_right = false;
-                    this->matrix[y][x - 1].draw_cell(window, (x - 1) * CELL_SIZE, y * CELL_SIZE);
+                    this->matrix[y][x - 1].draw_cell(window);
                 }
             }
 
-            this->matrix[y][x].draw_cell(window, x * CELL_SIZE, y * CELL_SIZE);
+            this->matrix[y][x].draw_cell(window);
 
+            window->clear(BG_COLOR);
+            this->draw(window);
             window->display();
 
             sf::sleep(sf::milliseconds(DELAY));
@@ -139,6 +142,7 @@ void Maze::mazefy_binary_tree(sf::RenderWindow* window) {
 // (also draws the matrix in the process for a cool visualization)
 void Maze::mazefy_depth_first_search(sf::RenderWindow* window, Cell* cell) {
     cell->active = true;
+
     while (is_dead_end(cell) == false) {
         Cell* neighbor = this->random_unvisited_neighbor(cell);
 
@@ -158,9 +162,11 @@ void Maze::mazefy_depth_first_search(sf::RenderWindow* window, Cell* cell) {
             cell->wall_down = false;
             neighbor->wall_up = false;
         }
-
-        cell->draw_cell(window, cell->x * CELL_SIZE, cell->y * CELL_SIZE);
-        neighbor->draw_cell(window, neighbor->x * CELL_SIZE, neighbor->y * CELL_SIZE);
+ 
+        window->clear(BG_COLOR);
+        cell->draw_cell(window);
+        neighbor->draw_cell(window);
+        this->draw(window);
         window->display();
 
         mazefy_depth_first_search(window, neighbor);

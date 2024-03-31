@@ -1,4 +1,3 @@
-#include <iostream>
 #include <SFML/Graphics.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include "include/maze.h"
@@ -29,8 +28,21 @@ int main() {
           Cell* cell_at_mouse = maze.get_cell(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
           maze.mazefy_depth_first_search(&window, cell_at_mouse);
         }
-        std::cout << sf::Mouse::getPosition(window).x << std::endl;
-        std::cout << sf::Mouse::getPosition(window).y << std::endl;
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)){
+          Cell* cell_at_mouse = maze.get_cell(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
+          cell_at_mouse->active = false;
+        }
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)){
+          Cell* cell_at_mouse = maze.get_cell(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
+          cell_at_mouse->active = true;
+        }
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::H)){
+          Cell* cell_at_mouse = maze.get_cell(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
+          cell_at_mouse->highlighted = !cell_at_mouse->highlighted;
+        }
 
         window.clear(NORD_DARK);
 
