@@ -7,6 +7,7 @@ public:
     int y;
 
     bool active{ false };
+    bool visited{ false };
     bool highlighted{ false };
     bool wall_up{ true };
     bool wall_down{ true };
@@ -14,4 +15,5 @@ public:
     bool wall_right{ true };
 
     void draw_cell(sf::RenderWindow* window);
+    void draw_highlighted(sf::RenderWindow* window);
 };

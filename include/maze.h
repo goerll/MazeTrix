@@ -11,6 +11,7 @@ public:
     Maze();
     void draw(sf::RenderWindow* window);
     void clear();
+    Cell* get_neighbor(Cell*, char direction);
     Cell* random_unvisited_neighbor(Cell* cell);
     bool is_dead_end(Cell* cell);
     Cell* get_cell(float x, float y);

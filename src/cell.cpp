@@ -1,23 +1,33 @@
 #include "../include/cell.h"
 #include "../include/global.h"
 
-sf::RectangleShape CELL_SQUARE({ CELL_SIZE, CELL_SIZE });
+sf::RectangleShape CELL_SQUARE({ CELL_SIZE-WALL_SIZE, CELL_SIZE-WALL_SIZE});
 sf::RectangleShape BORDER_VERTICAL({ WALL_SIZE, CELL_SIZE });
 sf::RectangleShape BORDER_HORIZONTAL({ CELL_SIZE + static_cast<int>(WALL_SIZE/2)*2, WALL_SIZE });
 
-
 int half_wall = (static_cast<int>(WALL_SIZE/2));
+
+void Cell::draw_highlighted(sf::RenderWindow* window){
+    int x = this->x * CELL_SIZE;
+    int y = this->y * CELL_SIZE;
+
+    CELL_SQUARE.setPosition(x+half_wall, y+half_wall);
+
+    CELL_SQUARE.setFillColor(HIGHLIGHT_COLOR);
+
+    window->draw(CELL_SQUARE);
+}
 
 void Cell::draw_cell(sf::RenderWindow* window) {
     int x = this->x * CELL_SIZE;
     int y = this->y * CELL_SIZE;
 
-    CELL_SQUARE.setPosition(x, y);
+    CELL_SQUARE.setPosition(x+half_wall, y+half_wall);
 
     if (this->highlighted) {
         CELL_SQUARE.setFillColor(HIGHLIGHT_COLOR);
-        BORDER_HORIZONTAL.setFillColor(BORDER_HIGHLIGHT_COLOR);
-        BORDER_VERTICAL.setFillColor(BORDER_HIGHLIGHT_COLOR);
+        BORDER_HORIZONTAL.setFillColor(BORDER_COLOR);
+        BORDER_VERTICAL.setFillColor(BORDER_COLOR);
     }
     else {
         CELL_SQUARE.setFillColor(CELL_COLOR);
@@ -25,7 +35,7 @@ void Cell::draw_cell(sf::RenderWindow* window) {
         BORDER_VERTICAL.setFillColor(BORDER_COLOR);
     }
 
-    //window->draw(CELL_SQUARE);
+    window->draw(CELL_SQUARE);
 
     if (wall_up) {
         BORDER_HORIZONTAL.setPosition(x - half_wall, y - half_wall);

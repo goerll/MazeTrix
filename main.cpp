@@ -1,6 +1,8 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window/Keyboard.hpp>
+#include "include/global.h"
 #include "include/maze.h"
+#include "include/pathfinder.h"
 
 int main() {
     sf::RenderWindow window(sf::VideoMode(WINDOW_SIZE, WINDOW_SIZE), "MazeTrix");
@@ -8,6 +10,7 @@ int main() {
     window.clear(NORD_DARK);
 
     Maze maze;
+    Pathfinder pathfinder;
 
     while (window.isOpen()) {
         sf::Event event;
@@ -44,9 +47,15 @@ int main() {
           cell_at_mouse->highlighted = !cell_at_mouse->highlighted;
         }
 
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::P)){
+          Cell* cell_at_mouse = maze.get_cell(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
+          pathfinder.find_right_hand(&maze, cell_at_mouse, &(maze.matrix[NUM_OF_LINES][NUM_OF_LINES]));
+        }
+
         window.clear(NORD_DARK);
 
         maze.draw(&window);
+
 
         window.display();
     }

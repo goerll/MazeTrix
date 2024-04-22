@@ -1,5 +1,6 @@
 #include "../include/maze.h"
 #include "../include/random.h"
+#include <cmath>
 
 // Constructor
 Maze::Maze() {
@@ -32,6 +33,26 @@ void Maze::clear(){
             matrix[y][x].wall_right = true;
         }
     }
+}
+
+Cell* Maze::get_neighbor(Cell* cell, char direction){
+  switch(direction){
+    case 'u':
+      return &(this->matrix[cell->y + 1][cell->x]);
+
+    case 'd':
+      return &(this->matrix[cell->y - 1][cell->x]);
+
+    case 'l':
+      return &(this->matrix[cell->y][cell->x - 1]);
+
+    case 'r':
+      return &(this->matrix[cell->y][cell->x + 1]);
+
+    default:
+      return cell;
+
+  }
 }
 
 // Get a cell's random unvisited neighbor
@@ -162,7 +183,7 @@ void Maze::mazefy_depth_first_search(sf::RenderWindow* window, Cell* cell) {
             cell->wall_down = false;
             neighbor->wall_up = false;
         }
- 
+
         window->clear(BG_COLOR);
         cell->draw_cell(window);
         neighbor->draw_cell(window);
