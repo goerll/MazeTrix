@@ -1,9 +1,9 @@
 #include "../include/pathfinder.h"
 #include <SFML/Graphics/RenderWindow.hpp>
-#include "../include/global.h"
 
-sf::RectangleShape CELL_SQUARE({ CELL_SIZE-WALL_SIZE, CELL_SIZE-WALL_SIZE});
-
+Pathfinder::Pathfinder(Maze* maze){
+  this->position = &(maze->matrix[0][0]);
+}
 
 void Pathfinder::move_absolute(enum Direction direction){
   switch (direction) {
@@ -23,19 +23,10 @@ void Pathfinder::move_absolute(enum Direction direction){
 }
 
 void Pathfinder::move_relative(enum Direction direction){
-  switch (direction) {
-    case up:
-
-    case down:
-
-    case left:
-
-    case right:
-
-  }
+  this->move_absolute(get_absolute_dir(direction));
 }
 
-void Pathfinder::draw_pathfinder(sf::RenderWindow* window){
+void Pathfinder::draw(sf::RenderWindow* window){
   this->position->draw_highlighted(window);
 }
 
@@ -45,68 +36,58 @@ void Pathfinder::draw_path(sf::RenderWindow* window){
   }
 }
 
-char Pathfinder::get_relative_dir(enum Direction direction){
-  switch (direction) {
+/* The relative directions up and down mean frontwards and backwards */
+Direction Pathfinder::get_absolute_dir(enum Direction relative_dir){
+  switch (relative_dir) {
+
     case up:
-      switch (this->direction){
-        case up:
+      return this->direction;
 
-        case down:
-
-        case left:
-
-        case right:
-
-      }
- 
     case down:
       switch (this->direction){
         case up:
-
+          return down;
         case down:
-
+          return up;
         case left:
-
+          return right;
         case right:
-
-        default:
-          return this->direction;
+          return left;
       }
 
     case left:
       switch (this->direction){
         case up:
-
+          return left;
         case down:
-
+          return right;
         case left:
-
+          return down;
         case right:
-
-        default:
-          return this->direction;
+          return up;
       }
 
     case right:
       switch (this->direction){
         case up:
-
+          return right;
         case down:
-
+          return left;
         case left:
-
+          return up;
         case right:
-
-        default:
-          return this->direction;
+          return down;
       }
+
+    default:
+      return this->direction;
 
   }
 }
 
 void Pathfinder::find_right_hand(Maze* maze, Cell* start, Cell* finish){
   this->path.push_back(start);
-  this->direction = 'r';
+  this->direction = right;
   Cell* current_cell = start;
 
   while (current_cell != finish) {

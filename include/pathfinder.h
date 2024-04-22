@@ -13,13 +13,14 @@ public:
   std::vector<Cell*> path;
   Maze* maze;
   Cell* position;
-  char direction;
+  Direction direction;
  
+  Pathfinder(Maze* maze);
   void move_absolute(enum Direction direction);
   void move_relative(enum Direction direction);
-  void draw_pathfinder(sf::RenderWindow* window);
+  void draw(sf::RenderWindow* window);
   void draw_path(sf::RenderWindow* window);
-  char get_relative_dir(enum Direction direction);
+  Direction get_absolute_dir(enum Direction direction);
   void find_right_hand(Maze* maze, Cell* start, Cell* finish);
   bool find_recursive(Maze* maze, Cell* start);
 };

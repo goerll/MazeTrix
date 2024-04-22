@@ -10,7 +10,7 @@ int main() {
     window.clear(NORD_DARK);
 
     Maze maze;
-    Pathfinder pathfinder;
+    Pathfinder pathfinder(&maze);
 
     while (window.isOpen()) {
         sf::Event event;
@@ -47,6 +47,19 @@ int main() {
           cell_at_mouse->highlighted = !cell_at_mouse->highlighted;
         }
 
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::I)){
+          pathfinder.move_absolute(up);
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::K)){
+          pathfinder.move_absolute(down);
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::J)){
+          pathfinder.move_absolute(left);
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::L)){
+          pathfinder.move_absolute(right);
+        }
+
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::P)){
           Cell* cell_at_mouse = maze.get_cell(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
           pathfinder.find_right_hand(&maze, cell_at_mouse, &(maze.matrix[NUM_OF_LINES][NUM_OF_LINES]));
@@ -55,6 +68,7 @@ int main() {
         window.clear(NORD_DARK);
 
         maze.draw(&window);
+        pathfinder.draw(&window);
 
 
         window.display();
