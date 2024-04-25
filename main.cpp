@@ -3,14 +3,15 @@
 #include "include/global.h"
 #include "include/maze.h"
 #include "include/pathfinder.h"
+#include <iostream>
 
 int main() {
     sf::RenderWindow window(sf::VideoMode(WINDOW_SIZE, WINDOW_SIZE), "MazeTrix");
-    window.setFramerateLimit(120);
-    window.clear(NORD_DARK);
+    window.setFramerateLimit(10);
+    window.clear(BG_COLOR);
 
     Maze maze;
-    Pathfinder pathfinder(&maze);
+    Pathfinder pathfinder(&maze, 3, 0);
 
     while (window.isOpen()) {
         sf::Event event;
@@ -24,12 +25,16 @@ int main() {
         }
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::B)){
+          window.setFramerateLimit(120);
           maze.mazefy_binary_tree(&window);
+          window.setFramerateLimit(10);
         }
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)){
+          window.setFramerateLimit(120);
           Cell* cell_at_mouse = maze.get_cell(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
           maze.mazefy_depth_first_search(&window, cell_at_mouse);
+          window.setFramerateLimit(10);
         }
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)){
@@ -48,26 +53,26 @@ int main() {
         }
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::I)){
-          pathfinder.move_absolute(up);
+          if (pathfinder.move_absolute(up))
+          std::cout << pathfinder.x << " " << pathfinder.y << std::endl;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::K)){
-          pathfinder.move_absolute(down);
+          if (pathfinder.move_absolute(down))
+          std::cout << pathfinder.x << " " << pathfinder.y << std::endl;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::J)){
-          pathfinder.move_absolute(left);
+          if (pathfinder.move_absolute(left))
+          std::cout << pathfinder.x << " " << pathfinder.y << std::endl;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::L)){
-          pathfinder.move_absolute(right);
+          if (pathfinder.move_absolute(right))
+          std::cout << pathfinder.x << " " << pathfinder.y << std::endl;
         }
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::P)){
-          Cell* cell_at_mouse = maze.get_cell(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
-          pathfinder.find_right_hand(&maze, cell_at_mouse, &(maze.matrix[NUM_OF_LINES][NUM_OF_LINES]));
-        }
 
-        window.clear(NORD_DARK);
-
+        window.clear(BG_COLOR);
         maze.draw(&window);
+
         pathfinder.draw(&window);
 
 

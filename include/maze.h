@@ -13,7 +13,7 @@ public:
     // Draw the maze on the screen
     void draw(sf::RenderWindow* window);
     // Reset the matrix's cells to their default state
-    void clear();
+    void reset();
     // Get a neighbour from a cell
     Cell* get_neighbor(Cell*, Direction direction);
     // Get a random unvisited neighbour from a cell

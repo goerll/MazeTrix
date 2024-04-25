@@ -5,19 +5,20 @@
 #include <vector>
 #include "cell.h"
 #include "maze.h"
-
-enum Direction {up, down, left, right};
+#include "global.h"
 
 class Pathfinder{
 public:
   std::vector<Cell*> path;
   Maze* maze;
-  Cell* position;
-  Direction direction;
+  int x;
+  int y;
+  Direction direction { up };
  
-  Pathfinder(Maze* maze);
-  void move_absolute(enum Direction direction);
-  void move_relative(enum Direction direction);
+  Pathfinder(Maze* maze, int x, int y);
+  bool is_path(Direction side);
+  bool move_absolute(Direction direction);
+  bool move_relative(Direction direction);
   void draw(sf::RenderWindow* window);
   void draw_path(sf::RenderWindow* window);
   Direction get_absolute_dir(enum Direction direction);

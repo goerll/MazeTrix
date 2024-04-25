@@ -1,33 +1,81 @@
 #include "../include/pathfinder.h"
 #include <SFML/Graphics/RenderWindow.hpp>
 
-Pathfinder::Pathfinder(Maze* maze){
-  this->position = &(maze->matrix[0][0]);
+Pathfinder::Pathfinder(Maze* maze, int x, int y){
+  this->maze = maze;
+  this->x = x;
+  this->y = y;
 }
 
-void Pathfinder::move_absolute(enum Direction direction){
-  switch (direction) {
+bool Pathfinder::is_path(Direction side){
+  side = get_absolute_dir(side);
+
+  switch (side) {
     case up:
-      this->position = &(this->maze->matrix[this->position->y-1][this->position->x]);
+      if (this->y == 0 || this->maze->matrix[this->y-1][this->x].wall_down)
+        return false;
+      else
+        return true;
 
     case down:
-      this->position = &(this->maze->matrix[this->position->y+1][this->position->x]);
+      if (this->y == NUM_OF_LINES-1 || this->maze->matrix[this->y+1][this->x].wall_up)
+        return false;
+      else
+        return true;
 
     case left:
-      this->position = &(this->maze->matrix[this->position->y][this->position->x-1]);
+      if (this->x == 0 || this->maze->matrix[this->y][this->x-1].wall_right)
+        return false;
+      else
+        return true;
 
     case right:
-      this->position = &(this->maze->matrix[this->position->y][this->position->x+1]);
+      if (this->x == NUM_OF_LINES-1 || this->maze->matrix[this->y][this->x+1].wall_left)
+        return false;
+      else
+        return true;
 
+    default:
+      return false;
   }
 }
 
-void Pathfinder::move_relative(enum Direction direction){
-  this->move_absolute(get_absolute_dir(direction));
+bool Pathfinder::move_absolute(Direction direction){
+  if (this->is_path(direction)){
+    switch (direction) {
+      case up:
+        this->y--;
+        break;
+
+      case down:
+        this->y++;
+        break;
+
+      case left:
+        this->x--;
+        break;
+
+      case right:
+        this->x++;
+        break;
+
+    }
+
+    return true;
+  }
+
+  return false;
+}
+
+bool Pathfinder::move_relative(enum Direction direction){
+  if(this->move_absolute(get_absolute_dir(direction)))
+      return true;
+  else
+    return false;
 }
 
 void Pathfinder::draw(sf::RenderWindow* window){
-  this->position->draw_highlighted(window);
+  this->maze->matrix[this->y][this->x].draw_highlighted(window);
 }
 
 void Pathfinder::draw_path(sf::RenderWindow* window){
@@ -86,28 +134,5 @@ Direction Pathfinder::get_absolute_dir(enum Direction relative_dir){
 }
 
 void Pathfinder::find_right_hand(Maze* maze, Cell* start, Cell* finish){
-  this->path.push_back(start);
-  this->direction = right;
-  Cell* current_cell = start;
-
-  while (current_cell != finish) {
-    if(current_cell->wall_right){
-      current_cell = maze->get_neighbor(current_cell, 'l');
-    }
-    else if (!current_cell->wall_down) {
-      current_cell = maze->get_neighbor(current_cell, 'd');
-    }
-    else if (!current_cell->wall_right){
-      current_cell = maze->get_neighbor(current_cell, 'r');
-    }
-    else if (!current_cell->wall_up){
-      current_cell = maze->get_neighbor(current_cell, 'd');
-    }
-
-    current_cell->highlighted = true;
-    this->path.push_back(current_cell);
-  }
 }
 
-bool Pathfinder::find_recursive(Maze* maze, Cell* start){
-}
