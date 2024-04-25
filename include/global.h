@@ -21,3 +21,6 @@ const sf::Color CELL_COLOR = NORD_DARK;
 const sf::Color BORDER_COLOR = NORD_WHITE;
 const sf::Color HIGHLIGHT_COLOR = NORD_BLUE;
 const sf::Color BORDER_HIGHLIGHT_COLOR = NORD_DARK;
+
+// Enum
+enum Direction {up, down, left, right};
