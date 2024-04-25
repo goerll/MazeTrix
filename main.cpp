@@ -20,7 +20,7 @@ int main() {
         }
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::R)){
-          maze.clear();
+          maze.reset();
         }
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::B)){
