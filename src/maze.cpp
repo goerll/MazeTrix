@@ -2,7 +2,6 @@
 #include "../include/random.h"
 #include <cmath>
 
-// Constructor
 Maze::Maze() {
     for (int y = 0; y < NUM_OF_LINES; y++) {
         for (int x = 0; x < NUM_OF_LINES; x++) {
@@ -12,7 +11,6 @@ Maze::Maze() {
     }
 }
 
-// Draw
 void Maze::draw(sf::RenderWindow* window) {
     for (int y = 0; y < NUM_OF_LINES; y++) {
         for (int x = 0; x < NUM_OF_LINES; x++) {
@@ -23,7 +21,7 @@ void Maze::draw(sf::RenderWindow* window) {
     }
 }
 
-void Maze::clear(){
+void Maze::reset(){
     for (int y = 0; y < NUM_OF_LINES; y++) {
         for (int x = 0; x < NUM_OF_LINES; x++) {
             matrix[y][x].active = false;
@@ -35,18 +33,18 @@ void Maze::clear(){
     }
 }
 
-Cell* Maze::get_neighbor(Cell* cell, char direction){
+Cell* Maze::get_neighbor(Cell* cell, Direction direction){
   switch(direction){
-    case 'u':
+    case up:
       return &(this->matrix[cell->y + 1][cell->x]);
 
-    case 'd':
+    case down:
       return &(this->matrix[cell->y - 1][cell->x]);
 
-    case 'l':
+    case left:
       return &(this->matrix[cell->y][cell->x - 1]);
 
-    case 'r':
+    case right:
       return &(this->matrix[cell->y][cell->x + 1]);
 
     default:
@@ -55,12 +53,11 @@ Cell* Maze::get_neighbor(Cell* cell, char direction){
   }
 }
 
-// Get a cell's random unvisited neighbor
 Cell* Maze::random_unvisited_neighbor(Cell* cell) {
     // Array to store neighbors
     std::vector<Cell*> neighbors;
 
-    // Left neighbor
+    // Left neighbore 
     if (cell->x > 0) {
         if (this->matrix[cell->y][cell->x - 1].active == false)
             neighbors.push_back(&(this->matrix[cell->y][cell->x - 1]));
@@ -89,7 +86,6 @@ Cell* Maze::random_unvisited_neighbor(Cell* cell) {
     return neighbors[random_index];
 }
 
-// Verifies if a given cell is a dead end (has no unvisited neighbors)
 bool Maze::is_dead_end(Cell* cell) {
     // Left neighbor
     if (cell->x > 0) {
@@ -115,7 +111,6 @@ bool Maze::is_dead_end(Cell* cell) {
     return true;
 }
 
-// Returns the cell at specified window position
 Cell* Maze::get_cell(float x, float y){
     float index_x = floor(x/CELL_SIZE);
     float index_y = floor(y/CELL_SIZE);
@@ -123,8 +118,6 @@ Cell* Maze::get_cell(float x, float y){
     return &(this->matrix[index_y][index_x]);
 }
 
-// Transform the matrix into a maze using the binary tree algorithm
-// (also draws the matrix in the process for a cool visualization)
 void Maze::mazefy_binary_tree(sf::RenderWindow* window) {
     for (int y = 0; y < NUM_OF_LINES; y++) {
         for (int x = 0; x < NUM_OF_LINES; x++) {
@@ -159,8 +152,6 @@ void Maze::mazefy_binary_tree(sf::RenderWindow* window) {
     }
 }
 
-// Transform the matrix into a maze using the binary tree algorithm
-// (also draws the matrix in the process for a cool visualization)
 void Maze::mazefy_depth_first_search(sf::RenderWindow* window, Cell* cell) {
     cell->active = true;
 
