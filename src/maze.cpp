@@ -2,185 +2,76 @@
 #include "../include/random.h"
 #include <cmath>
 
-Maze::Maze() {
-    for (int y = 0; y < NUM_OF_LINES; y++) {
-        for (int x = 0; x < NUM_OF_LINES; x++) {
-            matrix[y][x].x = x;
-            matrix[y][x].y = y;
-        }
+Maze::Maze(int x, int y){
+  this->x = x;
+  this->y = y;
+
+  for (int cell_x = 0; cell_x < COL_NUM; cell_x++){
+    for (int cell_y = 0; cell_y < LINE_NUM; cell_y++){
+      this->matrix[cell_x][cell_y].x = cell_x;
+      this->matrix[cell_x][cell_y].y = cell_y;
+      this->matrix[cell_x][cell_y].maze = this;
     }
-}
-
-void Maze::draw(sf::RenderWindow* window) {
-    for (int y = 0; y < NUM_OF_LINES; y++) {
-        for (int x = 0; x < NUM_OF_LINES; x++) {
-            if (this->matrix[y][x].active) {
-                this->matrix[y][x].draw_cell(window);
-            }
-        }
-    }
-}
-
-void Maze::reset(){
-    for (int y = 0; y < NUM_OF_LINES; y++) {
-        for (int x = 0; x < NUM_OF_LINES; x++) {
-            matrix[y][x].active = false;
-            matrix[y][x].wall_up = true;
-            matrix[y][x].wall_down = true;
-            matrix[y][x].wall_left = true;
-            matrix[y][x].wall_right = true;
-        }
-    }
-}
-
-Cell* Maze::get_neighbor(Cell* cell, Direction direction){
-  switch(direction){
-    case up:
-      return &(this->matrix[cell->y + 1][cell->x]);
-
-    case down:
-      return &(this->matrix[cell->y - 1][cell->x]);
-
-    case left:
-      return &(this->matrix[cell->y][cell->x - 1]);
-
-    case right:
-      return &(this->matrix[cell->y][cell->x + 1]);
-
-    default:
-      return cell;
-
   }
 }
 
-Cell* Maze::random_unvisited_neighbor(Cell* cell) {
-    // Array to store neighbors
-    std::vector<Cell*> neighbors;
-
-    // Left neighbore 
-    if (cell->x > 0) {
-        if (this->matrix[cell->y][cell->x - 1].active == false)
-            neighbors.push_back(&(this->matrix[cell->y][cell->x - 1]));
-    }
-    // Right neighbor
-    if (cell->x < NUM_OF_LINES - 1) {
-        if (this->matrix[cell->y][cell->x + 1].active == false)
-            neighbors.push_back(&(this->matrix[cell->y][cell->x + 1]));
-    }
-    // Up neighbor
-    if (cell->y > 0) {
-        if (this->matrix[cell->y - 1][cell->x].active == false)
-            neighbors.push_back(&(this->matrix[cell->y - 1][cell->x]));
-    }
-    // Down neighbor
-    if (cell->y < NUM_OF_LINES - 1) {
-        if (this->matrix[cell->y + 1][cell->x].active == false)
-            neighbors.push_back(&(this->matrix[cell->y + 1][cell->x]));
-    }
-
-    if (neighbors.empty()) {
-        return nullptr;
-    }
-
-    int random_index = rand_num(0, neighbors.size() - 1);
-    return neighbors[random_index];
+Maze::Maze(){
+  Maze(0, 0);
 }
 
-bool Maze::is_dead_end(Cell* cell) {
-    // Left neighbor
-    if (cell->x > 0) {
-        if (this->matrix[cell->y][cell->x - 1].active == false)
-            return false;
+void Maze::draw(sf::RenderWindow* window){
+  for (int x = 0; x < COL_NUM; x++){
+    for (int y = 0; y < LINE_NUM; y++){
+      if (this->matrix[x][y].active)
+        this->matrix[x][y].draw(window);
     }
-    // Right neighbor
-    if (cell->x < NUM_OF_LINES - 1) {
-        if (this->matrix[cell->y][cell->x + 1].active == false)
-            return false;
-    }
-    // Up neighbor
-    if (cell->y > 0) {
-        if (this->matrix[cell->y - 1][cell->x].active == false)
-            return false;
-    }
-    // Down neighbor
-    if (cell->y < NUM_OF_LINES - 1) {
-        if (this->matrix[cell->y + 1][cell->x].active == false)
-            return false;
-    }
+  }
+}
 
-    return true;
+void Maze::reset(){
+  Maze* temp = new Maze();
+  *this = *temp;
+  delete temp;
 }
 
 Cell* Maze::get_cell(float x, float y){
     float index_x = floor(x/CELL_SIZE);
     float index_y = floor(y/CELL_SIZE);
 
-    return &(this->matrix[index_y][index_x]);
+    return &(this->matrix[index_x][index_y]);
 }
 
-void Maze::mazefy_binary_tree(sf::RenderWindow* window) {
-    for (int y = 0; y < NUM_OF_LINES; y++) {
-        for (int x = 0; x < NUM_OF_LINES; x++) {
-            this->matrix[y][x].active = true;
 
-            int random = rand_num(0, 1);
+void Maze::mazefy_binary_tree(sf::RenderWindow* window){
+  for (int x = 0; x < COL_NUM; x++){
+    for (int y = 0; y < LINE_NUM; y++){
+      this->matrix[x][y].active = true;
 
-            if (random == 1 || x == 0 || y == 0) {
-                this->matrix[y][x].wall_up = false;
-                if (y > 0) {
-                    this->matrix[y - 1][x].wall_down = false;
-                    this->matrix[y - 1][x].draw_cell(window);
-                }
-            }
+      int random = rand_num(0, 1);
 
-            if (random == 0 || x == 0 || y == 0) {
-                this->matrix[y][x].wall_left = false;
-                if (x > 0) {
-                    this->matrix[y][x - 1].wall_right = false;
-                    this->matrix[y][x - 1].draw_cell(window);
-                }
-            }
+      if (random == 1 || x == 0 || y == 0) {
+          this->matrix[x][y].wall_up = false;
+          if (y > 0) {
+              this->matrix[x][y - 1].wall_down = false;
+          }
+      }
 
-            this->matrix[y][x].draw_cell(window);
+      if (random == 0 || x == 0 || y == 0) {
+          this->matrix[x][y].wall_left = false;
+          if (x > 0) {
+              this->matrix[x - 1][y].wall_right = false;
+          }
+      }
 
-            window->clear(BG_COLOR);
-            this->draw(window);
-            window->display();
-
-            sf::sleep(sf::milliseconds(DELAY));
-        }
+      window->clear(BG_COLOR);
+      this->draw(window);
+      window->display();
     }
+  }
 }
 
-void Maze::mazefy_depth_first_search(sf::RenderWindow* window, Cell* cell) {
-    cell->active = true;
+void Maze::mazefy_depth_first_search(sf::RenderWindow* window, Cell* cell){
+  cell->active = true;
 
-    while (is_dead_end(cell) == false) {
-        Cell* neighbor = this->random_unvisited_neighbor(cell);
-
-        if (cell->x > neighbor->x) {
-            cell->wall_left = false;
-            neighbor->wall_right = false;
-        }
-        else if (cell->x < neighbor->x) {
-            cell->wall_right = false;
-            neighbor->wall_left = false;
-        }
-        else if (cell->y > neighbor->y) {
-            cell->wall_up = false;
-            neighbor->wall_down = false;
-        }
-        else if (cell->y < neighbor->y) {
-            cell->wall_down = false;
-            neighbor->wall_up = false;
-        }
-
-        window->clear(BG_COLOR);
-        cell->draw_cell(window);
-        neighbor->draw_cell(window);
-        this->draw(window);
-        window->display();
-
-        mazefy_depth_first_search(window, neighbor);
-    }
 }
+
