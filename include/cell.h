@@ -14,6 +14,10 @@ public:
     int x;
     int y;
 
+    // Constructor
+    Cell();
+    Cell(Maze* maze, int x, int y);
+
     // State
     bool active{ true };
     bool highlighted{ false };

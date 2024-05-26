@@ -30,15 +30,15 @@ int main() {
           maze.mazefy_binary_tree(&window);
           window.setFramerateLimit(10);
         }
-        /**/
+
         /* DEPTH FIRST SEARCH */
-        /* if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)){ */
-        /*   window.setFramerateLimit(120); */
-        /*   Cell* cell_at_mouse = maze.get_cell(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y); */
-        /*   maze.mazefy_depth_first_search(&window, cell_at_mouse); */
-        /*   window.setFramerateLimit(10); */
-        /* } */
-        /**/
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)){
+          window.setFramerateLimit(120);
+          Cell* cell_at_mouse = maze.get_cell(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
+          maze.mazefy_depth_first_search(&window, cell_at_mouse);
+          window.setFramerateLimit(10);
+        }
+
         /* DEACTIVATE CELL AT MOUSE */
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)){
           Cell* cell_at_mouse = maze.get_cell(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
