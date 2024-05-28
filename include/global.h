@@ -29,6 +29,11 @@ const sf::Color BORDER_COLOR = NORD_WHITE;
 // Cell in highlighted state
 const sf::Color HIGHLIGHT_COLOR = NORD_BLUE;
 const sf::Color BORDER_HIGHLIGHT_COLOR = NORD_DARK;
+// Pathfinder color
+const sf::Color PATHFINDER_COLOR = NORD_BLUE;
 
 // ENUM
 enum Direction {up, right, down, left};
+
+// Random ENUM
+Direction random_dir();

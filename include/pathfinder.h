@@ -10,13 +10,35 @@
 class Pathfinder{
 public:
     std::vector<Cell*> path;
+    std::array<std::array<std::vector<Cell*>, LINE_NUM>, COL_NUM> adjacency;
+
     Maze* maze;
+
     int x;
     int y;
+
+
     Direction direction { down };
 
     // Constructor
     Pathfinder(Maze* maze, int x, int y);
+
+    // Verifies if the pathfinder can walk forward
+    bool is_free();
+    // Walks the pathfinder forward and returns if it could do so
+    bool walk();
+    // Goes back to previous cell position
+    void step_back();
+    // Maps the maze the pathfinder is in
+    void map();
+    // Depth first search
+    void depth_search(int x = COL_NUM-1, int y = LINE_NUM-1);
+    // Verifies if pathfinder is in dead end
+    bool dead_end();
+    // Random viable way
+    Cell* random_way();
+
+
     // Verifies if the cell at a relative position can be accessed
     bool is_path(Direction side);
     // Moves the pathfinder to an absolute given direction

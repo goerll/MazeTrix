@@ -3,22 +3,25 @@
 #include "global.h"
 #include <SFML/Graphics.hpp>
 #include <array>
-
+#include <list>
 class Maze {
 public:
     std::array<std::array<Cell, LINE_NUM>, COL_NUM> matrix;
 
-    int x { 0 };
-    int y { 0 };
+    int x;
+    int y;
 
     // Constructor
-    Maze();
-    // Constructor
-    Maze(int x, int y);
+    Maze(int x = 0, int y = 0);
+
     // Draw the maze on the screen
     void draw(sf::RenderWindow* window);
     // Reset the matrix's cells to their default state
     void reset();
+    // Generate graph representation
+    void graph();
+
+
     // Get the cell that is at a specific screen coordinate
     Cell* get_cell(float x, float y);
     // Turn the matrix into a maze using the binary tree algorithm

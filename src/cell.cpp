@@ -91,7 +91,7 @@ Cell* Cell::random_unvisited_neighbor() {
     // Array to store neighbors
     std::vector<Cell*> neighbors;
 
-    // Left neighbore 
+    // Left neighbor
     if (this->x > 0) {
         if (this->maze->matrix[this->x - 1][this->y].times_visited == false)
             neighbors.push_back(&(this->maze->matrix[this->x - 1][this->y]));

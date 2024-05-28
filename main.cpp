@@ -11,6 +11,8 @@ int main() {
     window.clear(BG_COLOR);
 
     Maze maze(0,0);
+    Pathfinder joe(&maze, 0, 0);
+    maze.mazefy_depth_first_search(&window, &maze.matrix[0][0]);
 
     while (window.isOpen()) {
         sf::Event event;
@@ -79,6 +81,7 @@ int main() {
         window.clear(BG_COLOR);
 
         maze.draw(&window);
+        joe.draw(&window);
 
         window.display();
     }

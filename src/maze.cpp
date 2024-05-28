@@ -2,10 +2,7 @@
 #include "../include/random.h"
 #include <cmath>
 
-Maze::Maze(int x, int y){
-    this->x = x;
-    this->y = y;
-
+Maze::Maze(int x, int y) : x(x), y(y){
     for (int cell_x = 0; cell_x < COL_NUM; cell_x++){
         for (int cell_y = 0; cell_y < LINE_NUM; cell_y++){
             this->matrix[cell_x][cell_y].x = cell_x;
@@ -13,10 +10,6 @@ Maze::Maze(int x, int y){
             this->matrix[cell_x][cell_y].maze = this;
         }
     }
-}
-
-Maze::Maze(){
-    Maze(0, 0);
 }
 
 void Maze::draw(sf::RenderWindow* window){
@@ -44,6 +37,7 @@ Cell* Maze::get_cell(float x, float y){
 }
 
 void Maze::mazefy_binary_tree(sf::RenderWindow* window){
+    window->setFramerateLimit(120);
     for (int x = 0; x < COL_NUM; x++){
         for (int y = 0; y < LINE_NUM; y++){
             this->matrix[x][y].active = true;
@@ -69,9 +63,11 @@ void Maze::mazefy_binary_tree(sf::RenderWindow* window){
             window->display();
         }
     }
+    window->setFramerateLimit(10);
 }
 
 void Maze::mazefy_depth_first_search(sf::RenderWindow* window, Cell* cell){
+    window->setFramerateLimit(120);
     cell->active = true;
 
     while (!cell->is_dead_end()) {
@@ -103,5 +99,6 @@ void Maze::mazefy_depth_first_search(sf::RenderWindow* window, Cell* cell){
 
         mazefy_depth_first_search(window, neighbor);
     }
+    window->setFramerateLimit(10);
 }
 
