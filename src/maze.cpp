@@ -84,6 +84,10 @@ void Maze::mazefy_binary_tree(sf::RenderWindow* window){
     window->setFramerateLimit(10);
 }
 
+Cell* Maze::getFinish(){
+    return &(this->matrix[LINE_NUM - 1][COL_NUM - 1]);
+}
+
 void Maze::mazefy_depth_first_search(sf::RenderWindow* window, Cell* cell){
     window->setFramerateLimit(120);
     cell->active = true;
@@ -118,5 +122,14 @@ void Maze::mazefy_depth_first_search(sf::RenderWindow* window, Cell* cell){
         mazefy_depth_first_search(window, neighbor);
     }
     window->setFramerateLimit(10);
+
+}
+
+void Maze::resetVisited(){
+    for (int x = 0; x < COL_NUM; x++){
+        for (int y = 0; y < LINE_NUM; y++){
+            this->matrix[x][y].times_visited = 0;
+        }
+    }
 }
 

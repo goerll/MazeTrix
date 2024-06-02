@@ -21,9 +21,10 @@ public:
     // Generate graph representation
     std::array<std::array<std::vector<Cell*>, LINE_NUM>, COL_NUM> toGraph();
 
-
+    void resetVisited();
     // Get the cell that is at a specific screen coordinate
     Cell* get_cell(float x, float y);
+    Cell* getFinish();
     // Turn the matrix into a maze using the binary tree algorithm
     void mazefy_binary_tree(sf::RenderWindow* window);
     // Turn the matrix into a maze using the depth first serach algorithm

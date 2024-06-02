@@ -11,8 +11,8 @@ const sf::Color NORD_BLUE(136, 192, 208, 255);
 
 // SIZE OF STUFF
 // Number of lines and collumns
-const int LINE_NUM = 10;
-const int COL_NUM = 10;
+const int LINE_NUM = 20;
+const int COL_NUM = 20;
 // Cell and wall size
 const int WALL_SIZE = 2;
 const int CELL_SIZE = 80;

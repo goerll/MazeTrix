@@ -13,10 +13,7 @@ public:
     std::array<std::array<std::vector<Cell*>, LINE_NUM>, COL_NUM> map;
 
     Maze* maze;
-
-    int x;
-    int y;
-
+    Cell* position;
 
     Direction direction { down };
 
@@ -30,11 +27,15 @@ public:
     // Goes back to previous cell position
     void step_back();
     // Depth first search
-    void depth_search(int x = COL_NUM-1, int y = LINE_NUM-1);
+    bool depthFirstSearch(Cell* start, Cell* end);
+    bool depthFirstSearch(Cell* end);
+    void depthFirstSearch();
     // Verifies if pathfinder is in dead end
-    bool dead_end();
+    bool isDeadEnd();
     // Random viable way
-    Cell* random_way();
+    Cell* getWay();
+
+    void setPosition(Cell* cell);
 
 
     // Verifies if the cell at a relative position can be accessed
@@ -46,7 +47,7 @@ public:
     // Draw the pathfinder
     void draw(sf::RenderWindow* window);
     // Draw pathfinder's path
-    void draw_path(sf::RenderWindow* window);
+    void drawPath(sf::RenderWindow* window);
     // Get the absolute direction given a direction based on the pathfinder's orientation
     Direction get_absolute_dir(enum Direction direction);
     // Turn pathfinder to relative direction
