@@ -15,8 +15,7 @@ public:
     int y;
 
     // Constructor
-    Cell();
-    Cell(Maze* maze, int x, int y);
+    Cell(Maze* maze = nullptr, int x = 0, int y = 0);
 
     // State
     bool active{ true };
@@ -31,13 +30,19 @@ public:
 
     // Draw cell respecting state variables
     void draw(sf::RenderWindow* window);
-    // Draw cell but with offset
-    void draw(sf::RenderWindow* window, int offset_x, int offset_y);
     // Draw cell as if it was highlighted
     void draw_highlighted(sf::RenderWindow* window);
-    // Get a neighbor from a cell
-    Cell* get_neighbor(Direction direction);
-    // Get a random unvisited neighbor from a cell
+    // Get a neighbor from a specific direction
+    Cell* getNeighbor(Direction direction);
+    // Verify if a cell is acessible from current cell
+    bool isAcessible(Cell* cell);
+    // Get all neighbors
+    std::vector<Cell*> getNeighbors();
+    // Get all neighbors acessible (with no walls in between)
+    std::vector<Cell*> getAcessibleNeighbors();
+    std::vector<Cell*> getUnvisitedNeighbors();
+    std::vector<Cell*> getAcessibleUnvisitedNeighbors();
+    Cell* getRandomNeighbor(std::vector<Cell*> potential_neighbors);
     Cell* random_unvisited_neighbor();
     // Verify if a cell is a dead end (has no unvisited neighbours)
     bool is_dead_end();

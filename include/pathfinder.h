@@ -10,7 +10,7 @@
 class Pathfinder{
 public:
     std::vector<Cell*> path;
-    std::array<std::array<std::vector<Cell*>, LINE_NUM>, COL_NUM> adjacency;
+    std::array<std::array<std::vector<Cell*>, LINE_NUM>, COL_NUM> map;
 
     Maze* maze;
 
@@ -29,8 +29,6 @@ public:
     bool walk();
     // Goes back to previous cell position
     void step_back();
-    // Maps the maze the pathfinder is in
-    void map();
     // Depth first search
     void depth_search(int x = COL_NUM-1, int y = LINE_NUM-1);
     // Verifies if pathfinder is in dead end

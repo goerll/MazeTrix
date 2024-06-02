@@ -1,6 +1,8 @@
 #include "../include/maze.h"
 #include "../include/random.h"
+#include <array>
 #include <cmath>
+#include <iostream>
 
 Maze::Maze(int x, int y) : x(x), y(y){
     for (int cell_x = 0; cell_x < COL_NUM; cell_x++){
@@ -27,6 +29,22 @@ void Maze::reset() {
             matrix[x][y] = Cell(this, x, y);
         }
     }
+}
+
+std::array<std::array<std::vector<Cell*>, LINE_NUM>, COL_NUM> Maze::toGraph() {
+    std::array<std::array<std::vector<Cell*>, LINE_NUM>, COL_NUM> graph;
+    for (int y = 0; y < LINE_NUM; y++){
+        for (int x = 0; x < COL_NUM; x++){
+            graph[x][y] = this->matrix[x][y].getAcessibleNeighbors();
+            std::cout << "Cell[" << x << "][" << y << "]: ";
+            for (Cell* cell : graph[x][y]) {
+                std::cout << "(" << cell->x << "," << cell->y << ")";
+            }
+            std::cout << std::endl;
+        }
+    }
+
+    return graph;
 }
 
 Cell* Maze::get_cell(float x, float y){
@@ -71,7 +89,7 @@ void Maze::mazefy_depth_first_search(sf::RenderWindow* window, Cell* cell){
     cell->active = true;
 
     while (!cell->is_dead_end()) {
-        Cell* neighbor = cell->random_unvisited_neighbor();
+        Cell* neighbor = cell->getRandomNeighbor(cell->getUnvisitedNeighbors());
         neighbor->times_visited++;
 
         if (cell->x > neighbor->x) {

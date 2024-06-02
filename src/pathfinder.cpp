@@ -4,9 +4,7 @@
 
 sf::RectangleShape SQUARE( { CELL_SIZE - (WALL_SIZE*2), CELL_SIZE - (WALL_SIZE*2) } );
 
-Pathfinder::Pathfinder(Maze* maze, int x = 0, int y = 0) : maze(maze), x(x), y(y) {
-    map();
-}
+Pathfinder::Pathfinder(Maze* maze, int x = 0, int y = 0) : maze(maze), x(x), y(y), map(maze->toGraph()) {}
 
 void Pathfinder::draw (sf::RenderWindow* window) {
     int x = (this->x * CELL_SIZE) + this->maze->x;
@@ -25,23 +23,23 @@ void Pathfinder::draw_path(sf::RenderWindow* window) {
     }
 }
 
-void Pathfinder::map(){
-    for (int y = 0; y < LINE_NUM; y++){
-        for (int x = 0; x < COL_NUM; x++){
-            for (int dir = up; dir <= left; ++dir){
-                Cell* neighbor = this->maze->matrix[x][y].get_neighbor((Direction)dir);
-                if (neighbor && is_path((Direction)dir)){
-                    adjacency[x][y].push_back(neighbor);
-                }
-            }
-            std::cout << "Cell[" << x << "][" << y << "]: ";
-            for (Cell* cell : adjacency[x][y]) {
-                std::cout << "(" << cell->x << "," << cell->y << ")";
-            }
-            std::cout << std::endl;
-        }
-    }
-}
+/*void Pathfinder::map(){*/
+/*    for (int y = 0; y < LINE_NUM; y++){*/
+/*        for (int x = 0; x < COL_NUM; x++){*/
+/*            for (int dir = up; dir <= left; ++dir){*/
+/*                Cell* neighbor = this->maze->matrix[x][y].getNeighbor((Direction)dir);*/
+/*                if (neighbor && is_path((Direction)dir)){*/
+/*                    adjacency[x][y].push_back(neighbor);*/
+/*                }*/
+/*            }*/
+/*            std::cout << "Cell[" << x << "][" << y << "]: ";*/
+/*            for (Cell* cell : adjacency[x][y]) {*/
+/*                std::cout << "(" << cell->x << "," << cell->y << ")";*/
+/*            }*/
+/*            std::cout << std::endl;*/
+/*        }*/
+/*    }*/
+/*}*/
 
 
 bool Pathfinder::dead_end(){
@@ -55,7 +53,7 @@ Cell* Pathfinder::random_way() {
 }
 
 bool Pathfinder::is_path(Direction side){
-    if (!this->maze->matrix[x][y].get_neighbor(side))
+    if (!this->maze->matrix[x][y].getNeighbor(side))
         return false;
     else {
         /*switch (side) {*/

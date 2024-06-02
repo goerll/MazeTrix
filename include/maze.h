@@ -19,7 +19,7 @@ public:
     // Reset the matrix's cells to their default state
     void reset();
     // Generate graph representation
-    void graph();
+    std::array<std::array<std::vector<Cell*>, LINE_NUM>, COL_NUM> toGraph();
 
 
     // Get the cell that is at a specific screen coordinate
