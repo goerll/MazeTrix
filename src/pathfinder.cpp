@@ -4,8 +4,10 @@
 #include <stack>
 #include <queue>
 
-/*sf::RectangleShape SQUARE( { CELL_SIZE - (WALL_SIZE*2), CELL_SIZE - (WALL_SIZE*2) } );*/
-sf::RectangleShape SQUARE( { CELL_SIZE - (WALL_SIZE*2), CELL_SIZE - (WALL_SIZE*2) } );
+sf::RectangleShape PATHFINDER_SQUARE( { CELL_SIZE - (WALL_SIZE*2), CELL_SIZE - (WALL_SIZE*2) } );
+const int shrink = 10;
+/*sf::RectangleShape PATH_SQUARE( { CELL_SIZE - (WALL_SIZE*2) - shrink*2, CELL_SIZE - (WALL_SIZE*2) - shrink*2 } );*/
+sf::RectangleShape PATH_SQUARE( { CELL_SIZE, CELL_SIZE } );
 
 Pathfinder::Pathfinder(Maze* maze, int x = 0, int y = 0) : maze(maze), map(maze->toGraph()) {
     position = &maze->matrix[x][y];
@@ -18,19 +20,33 @@ void Pathfinder::draw (sf::RenderWindow* window) {
     int x = (this->position->x * CELL_SIZE) + this->maze->x;
     int y = (this->position->y * CELL_SIZE) + this->maze->y;
 
-    SQUARE.setFillColor(PATHFINDER_COLOR);
-    SQUARE.setPosition(x + WALL_SIZE, y+WALL_SIZE);
-    window->draw(SQUARE);
+    PATHFINDER_SQUARE.setFillColor(PATHFINDER_COLOR);
+    PATHFINDER_SQUARE.setPosition(x + WALL_SIZE, y+WALL_SIZE);
+    window->draw(PATHFINDER_SQUARE);
 }
 
+sf::Color interpolateColor(sf::Color a, sf::Color b, float t) {
+    sf::Color color;
+    color.r = (sf::Uint8)(a.r + (b.r - a.r) * t);
+    color.g = (sf::Uint8)(a.g + (b.g - a.g) * t);
+    color.b = (sf::Uint8)(a.b + (b.b - a.b) * t);
+    return color;
+};
+
 void Pathfinder::drawPath(sf::RenderWindow* window) {
+    sf::Color color;
+    sf::Color start = sf::Color::Magenta;
+    int i = 0;
     for (Cell* cell : path) {
+        i++;
         int x = (cell->x * CELL_SIZE) + this->maze->x;
         int y = (cell->y * CELL_SIZE) + this->maze->y;
 
-        SQUARE.setFillColor(sf::Color::Black);
-        SQUARE.setPosition(x + WALL_SIZE, y+WALL_SIZE);
-        window->draw(SQUARE);
+        color = interpolateColor(start, PATHFINDER_COLOR, (float)i/(float)path.size());
+        PATH_SQUARE.setFillColor(color);
+        PATH_SQUARE.setPosition(x + WALL_SIZE, y+WALL_SIZE);
+        window->draw(PATH_SQUARE);
+
     }
 }
 
@@ -59,6 +75,7 @@ bool Pathfinder::depthFirstSearch(Cell* end) {
     maze->resetVisited();
     std::stack<Cell*> stack;
     stack.push(position);
+    path.push_back(position);
 
     while (!stack.empty()) {
         if (position == end)
@@ -70,20 +87,26 @@ bool Pathfinder::depthFirstSearch(Cell* end) {
             position = nextCell;
             position->times_visited++;
             stack.push(position);
+            path.push_back(position);
         }
         else {
             stack.pop();
+            path.pop_back();
             if (!stack.empty())
                 position = stack.top();
         }
+        maze->window->clear(BG_COLOR);
+        maze->draw(maze->window);
+        this->draw(maze->window);
+        maze->window->display();
     }
 
     if (position == end) {
-        while (!stack.empty()) {
-            path.push_back(stack.top());
-            stack.pop();
-        }
-        std::reverse(path.begin(), path.end());
+        /*while (!stack.empty()) {*/
+        /*    path.push_back(stack.top());*/
+        /*    stack.pop();*/
+        /*}*/
+        /*std::reverse(path.begin(), path.end());*/
         return true;
     }
     return false;
@@ -95,6 +118,7 @@ void Pathfinder::breadthFirstSearch(Cell* end) {
     bool found = false;
     std::queue<Cell*> queue;
     queue.push(position);
+    path.push_back(position);
     position->times_visited++;
 
     std::array<std::array<Cell*, LINE_NUM>, COL_NUM> previous;
@@ -108,6 +132,12 @@ void Pathfinder::breadthFirstSearch(Cell* end) {
         Cell* node = queue.front();
         queue.pop();
 
+        position = node;
+        maze->window->clear(BG_COLOR);
+        maze->draw(maze->window);
+        this->draw(maze->window);
+        maze->window->display();
+
         if (node == end) {
             found = true;
             break;
@@ -116,12 +146,14 @@ void Pathfinder::breadthFirstSearch(Cell* end) {
         std::vector<Cell*> neighbors = node->getAcessibleUnvisitedNeighbors();
         for (Cell* next : neighbors) {
             queue.push(next);
+            path.push_back(next);
             next->times_visited++;
             previous[next->x][next->y] = node;
         }
     }
 
     if (found) {
+        path.clear();
         for (Cell* at = end; at != nullptr; at = previous[at->x][at->y]) {
             path.push_back(at);
         }

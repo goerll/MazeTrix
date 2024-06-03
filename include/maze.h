@@ -11,15 +11,19 @@ class Maze {
 public:
     std::array<std::array<Cell, LINE_NUM>, COL_NUM> matrix;
     std::vector<Pathfinder*> pathfinders;
+    sf::RenderWindow* window;
 
     int x;
     int y;
 
     // Constructor
-    Maze(int x = 0, int y = 0);
+    Maze(int x = 0, int y = 0, sf::RenderWindow* window = nullptr);
 
     // Draw the maze on the screen
     void draw(sf::RenderWindow* window);
+
+    void drawCellWalls();
+    void drawCellSquares();
     // Reset the matrix's cells to their default state
     void reset();
     // Generate graph representation

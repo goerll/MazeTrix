@@ -30,6 +30,10 @@ public:
 
     // Draw cell respecting state variables
     void draw(sf::RenderWindow* window);
+
+    void drawWalls(sf::RenderWindow* window);
+
+    void drawSquare(sf::RenderWindow* window);
     // Draw cell as if it was highlighted
     void draw_highlighted(sf::RenderWindow* window);
     // Get a neighbor from a specific direction

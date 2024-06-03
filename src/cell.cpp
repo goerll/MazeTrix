@@ -13,23 +13,21 @@ Cell::Cell(Maze* maze, int x, int y) : maze(maze), x(x), y(y), active(false),
     wall_right(true), times_visited(0) {}
 
 void Cell::draw(sf::RenderWindow* window){
+    drawSquare(window);
+    drawWalls(window);
+}
+
+void Cell::drawWalls(sf::RenderWindow* window) {
     int x = (this->x * CELL_SIZE) + this->maze->x;
     int y = (this->y * CELL_SIZE) + this->maze->y;
-
     if (!this->highlighted) {
-        CELL_SQUARE.setFillColor(CELL_COLOR);
         BORDER_VERTICAL.setFillColor(BORDER_COLOR);
         BORDER_HORIZONTAL.setFillColor(BORDER_COLOR);
     }
     else {
-        CELL_SQUARE.setFillColor(HIGHLIGHT_COLOR);
         BORDER_VERTICAL.setFillColor(BORDER_HIGHLIGHT_COLOR);
         BORDER_HORIZONTAL.setFillColor(BORDER_HIGHLIGHT_COLOR);
     }
-
-    CELL_SQUARE.setPosition(x + WALL_SIZE, y+WALL_SIZE);
-    window->draw(CELL_SQUARE);
-
     if (this->wall_up) {
         BORDER_HORIZONTAL.setPosition(x - WALL_SIZE, y - WALL_SIZE);
         window->draw(BORDER_HORIZONTAL);
@@ -46,6 +44,19 @@ void Cell::draw(sf::RenderWindow* window){
         BORDER_VERTICAL.setPosition(x - WALL_SIZE, y - WALL_SIZE);
         window->draw(BORDER_VERTICAL);
     }
+}
+
+void Cell::drawSquare(sf::RenderWindow* window) {
+    int x = (this->x * CELL_SIZE) + this->maze->x;
+    int y = (this->y * CELL_SIZE) + this->maze->y;
+    if (this->highlighted) {
+        CELL_SQUARE.setFillColor(HIGHLIGHT_COLOR);
+    }
+    else {
+        CELL_SQUARE.setFillColor(CELL_COLOR);
+    }
+    CELL_SQUARE.setPosition(x + WALL_SIZE, y+WALL_SIZE);
+    window->draw(CELL_SQUARE);
 }
 
 bool Cell::isAcessible(Cell* cell) {

@@ -9,7 +9,7 @@ int main() {
     window.setFramerateLimit(10);
     window.clear(BG_COLOR);
 
-    Maze maze(0,0);
+    Maze maze(0,0, &window);
     /*maze.mazefy_depth_first_search(&window, &maze.matrix[0][0]);*/
     Pathfinder pathfinder(&maze, 0, 0);
 
@@ -90,7 +90,6 @@ int main() {
         window.clear(BG_COLOR);
 
         maze.draw(&window);
-        pathfinder.draw(&window);
 
         window.display();
     }

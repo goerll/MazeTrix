@@ -3,9 +3,8 @@
 #include "../include/pathfinder.h"
 #include <array>
 #include <cmath>
-#include <iostream>
 
-Maze::Maze(int x, int y) : x(x), y(y){
+Maze::Maze(int x, int y, sf::RenderWindow* window) : x(x), y(y), window(window) {
     for (int cell_x = 0; cell_x < COL_NUM; cell_x++){
         for (int cell_y = 0; cell_y < LINE_NUM; cell_y++){
             this->matrix[cell_x][cell_y].x = cell_x;
@@ -16,10 +15,22 @@ Maze::Maze(int x, int y) : x(x), y(y){
 }
 
 void Maze::draw(sf::RenderWindow* window){
+    window->setFramerateLimit(120);
     for (int x = 0; x < COL_NUM; x++){
         for (int y = 0; y < LINE_NUM; y++){
             if (this->matrix[x][y].active)
-                this->matrix[x][y].draw(window);
+                this->matrix[x][y].drawSquare(window);
+        }
+    }
+
+    for (Pathfinder* pathfinder : pathfinders) {
+        pathfinder->draw(window);
+    }
+
+    for (int x = 0; x < COL_NUM; x++){
+        for (int y = 0; y < LINE_NUM; y++){
+            if (this->matrix[x][y].active)
+                this->matrix[x][y].drawWalls(window);
         }
     }
 }
@@ -41,11 +52,13 @@ std::array<std::array<std::vector<Cell*>, LINE_NUM>, COL_NUM> Maze::toGraph() {
     for (int y = 0; y < LINE_NUM; y++){
         for (int x = 0; x < COL_NUM; x++){
             graph[x][y] = this->matrix[x][y].getAcessibleNeighbors();
-            std::cout << "Cell[" << x << "][" << y << "]: ";
-            for (Cell* cell : graph[x][y]) {
-                std::cout << "(" << cell->x << "," << cell->y << ")";
-            }
-            std::cout << std::endl;
+
+            // Print out the adjacency list generated
+            /*std::cout << "Cell[" << x << "][" << y << "]: ";*/
+            /*for (Cell* cell : graph[x][y]) {*/
+                /*std::cout << "(" << cell->x << "," << cell->y << ")";*/
+            /*}*/
+            /*std::cout << std::endl;*/
         }
     }
 
