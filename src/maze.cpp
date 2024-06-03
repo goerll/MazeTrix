@@ -1,5 +1,6 @@
 #include "../include/maze.h"
 #include "../include/random.h"
+#include "../include/pathfinder.h"
 #include <array>
 #include <cmath>
 #include <iostream>
@@ -28,6 +29,10 @@ void Maze::reset() {
         for (int y = 0; y < COL_NUM; ++y) {
             matrix[x][y] = Cell(this, x, y);
         }
+    }
+
+    for (Pathfinder* pathfinder : pathfinders) {
+        pathfinder->update();
     }
 }
 
@@ -82,6 +87,10 @@ void Maze::mazefy_binary_tree(sf::RenderWindow* window){
         }
     }
     window->setFramerateLimit(10);
+
+    for (Pathfinder* pathfinder : pathfinders) {
+        pathfinder->update();
+    }
 }
 
 Cell* Maze::getFinish(){
@@ -123,6 +132,9 @@ void Maze::mazefy_depth_first_search(sf::RenderWindow* window, Cell* cell){
     }
     window->setFramerateLimit(10);
 
+    for (Pathfinder* pathfinder : pathfinders) {
+        pathfinder->update();
+    }
 }
 
 void Maze::resetVisited(){

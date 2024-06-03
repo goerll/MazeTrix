@@ -6,7 +6,10 @@
 /*sf::RectangleShape SQUARE( { CELL_SIZE - (WALL_SIZE*2), CELL_SIZE - (WALL_SIZE*2) } );*/
 sf::RectangleShape SQUARE( { CELL_SIZE - (WALL_SIZE*2), CELL_SIZE - (WALL_SIZE*2) } );
 
-Pathfinder::Pathfinder(Maze* maze, int x = 0, int y = 0) : maze(maze), map(maze->toGraph()) {position = &maze->matrix[x][y];}
+Pathfinder::Pathfinder(Maze* maze, int x = 0, int y = 0) : maze(maze), map(maze->toGraph()) {
+    position = &maze->matrix[x][y];
+    maze->pathfinders.push_back(this);
+}
 
 void Pathfinder::draw (sf::RenderWindow* window) {
     drawPath(window);
@@ -32,6 +35,7 @@ void Pathfinder::drawPath(sf::RenderWindow* window) {
 
 void Pathfinder::setPosition(Cell* cell) {
     position = cell;
+    path.clear();
 }
 
 bool Pathfinder::isDeadEnd(){
@@ -49,13 +53,8 @@ Cell* Pathfinder::getWay() {
     return nullptr;
 }
 
-bool Pathfinder::is_path(Direction side){
-    if (position->isAcessible(position->getNeighbor(side)))
-        return true;
-    return false;
-}
-
 bool Pathfinder::depthFirstSearch(Cell* end) {
+    path.clear();
     maze->resetVisited();
     std::stack<Cell*> stack;
     stack.push(position);
@@ -68,7 +67,6 @@ bool Pathfinder::depthFirstSearch(Cell* end) {
         Cell* nextCell = getWay();
 
         if (nextCell != nullptr) {
-            std::cout << "Next Cell: " << nextCell->x << " " << nextCell->y << std::endl;
             position = nextCell;
             position->times_visited++;
             stack.push(position);
@@ -89,13 +87,14 @@ bool Pathfinder::depthFirstSearch(Cell* end) {
         std::reverse(path.begin(), path.end());
         return true;
     }
-    std::cout << "Path not found" << std::endl;
     return false;
 }
 
-/*void Pathfinder::depthFirstSearch(Cell* end) {*/
-/*    depthFirstSearch(position, end);*/
-/*}*/
+void Pathfinder::update() {
+    path.clear();
+    map = maze->toGraph();
+}
+
 
 void Pathfinder::depthFirstSearch() {
     depthFirstSearch(maze->getFinish());

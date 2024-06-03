@@ -37,6 +37,8 @@ public:
 
     void setPosition(Cell* cell);
 
+    void update();
+
 
     // Verifies if the cell at a relative position can be accessed
     bool is_path(Direction side);

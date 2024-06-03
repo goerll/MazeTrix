@@ -4,9 +4,13 @@
 #include <SFML/Graphics.hpp>
 #include <array>
 #include <list>
+
+class Pathfinder;
+
 class Maze {
 public:
     std::array<std::array<Cell, LINE_NUM>, COL_NUM> matrix;
+    std::vector<Pathfinder*> pathfinders;
 
     int x;
     int y;

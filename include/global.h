@@ -15,7 +15,7 @@ const int LINE_NUM = 20;
 const int COL_NUM = 20;
 // Cell and wall size
 const int WALL_SIZE = 2;
-const int CELL_SIZE = 80;
+const int CELL_SIZE = 40;
 // Window size
 const int WIN_SIZE_X = CELL_SIZE * COL_NUM;
 const int WIN_SIZE_Y = CELL_SIZE * LINE_NUM;

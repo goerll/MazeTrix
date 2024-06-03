@@ -3,7 +3,6 @@
 #include "include/global.h"
 #include "include/maze.h"
 #include "include/pathfinder.h"
-#include <iostream>
 
 int main() {
     sf::RenderWindow window(sf::VideoMode(WIN_SIZE_X, WIN_SIZE_Y), "MazeTrix");
@@ -12,8 +11,8 @@ int main() {
 
     Maze maze(0,0);
     maze.mazefy_depth_first_search(&window, &maze.matrix[0][0]);
-    Pathfinder joe(&maze, 0, 0);
-    joe.depthFirstSearch();
+    Pathfinder pathfinder(&maze, 0, 0);
+    pathfinder.depthFirstSearch();
 
     while (window.isOpen()) {
         sf::Event event;
@@ -78,11 +77,17 @@ int main() {
         /*   std::cout << pathfinder.x << " " << pathfinder.y << std::endl; */
         /* } */
 
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::P)){
+            pathfinder.setPosition(maze.get_cell(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y));
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::L)){
+            pathfinder.depthFirstSearch(maze.get_cell(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y));
+        }
         /* WINDOW REFRESH */
         window.clear(BG_COLOR);
 
         maze.draw(&window);
-        joe.draw(&window);
+        pathfinder.draw(&window);
 
         window.display();
     }
