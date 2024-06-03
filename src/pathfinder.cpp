@@ -97,7 +97,6 @@ bool Pathfinder::depthFirstSearch(Cell* end) {
         }
         maze->window->clear(BG_COLOR);
         maze->draw(maze->window);
-        this->draw(maze->window);
         maze->window->display();
     }
 
@@ -135,7 +134,6 @@ void Pathfinder::breadthFirstSearch(Cell* end) {
         position = node;
         maze->window->clear(BG_COLOR);
         maze->draw(maze->window);
-        this->draw(maze->window);
         maze->window->display();
 
         if (node == end) {

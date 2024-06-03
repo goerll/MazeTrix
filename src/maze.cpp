@@ -16,21 +16,29 @@ Maze::Maze(int x, int y, sf::RenderWindow* window) : x(x), y(y), window(window) 
 
 void Maze::draw(sf::RenderWindow* window){
     window->setFramerateLimit(120);
-    for (int x = 0; x < COL_NUM; x++){
-        for (int y = 0; y < LINE_NUM; y++){
-            if (this->matrix[x][y].active)
-                this->matrix[x][y].drawSquare(window);
-        }
-    }
 
+    drawCellSquares();
     for (Pathfinder* pathfinder : pathfinders) {
         pathfinder->draw(window);
     }
+    drawCellWalls();
 
+}
+
+void Maze::drawCellWalls() {
     for (int x = 0; x < COL_NUM; x++){
         for (int y = 0; y < LINE_NUM; y++){
             if (this->matrix[x][y].active)
                 this->matrix[x][y].drawWalls(window);
+        }
+    }
+}
+
+void Maze::drawCellSquares() {
+    for (int x = 0; x < COL_NUM; x++){
+        for (int y = 0; y < LINE_NUM; y++){
+            if (this->matrix[x][y].active)
+                this->matrix[x][y].drawSquare(window);
         }
     }
 }
