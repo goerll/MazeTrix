@@ -10,9 +10,8 @@ int main() {
     window.clear(BG_COLOR);
 
     Maze maze(0,0);
-    maze.mazefy_depth_first_search(&window, &maze.matrix[0][0]);
+    /*maze.mazefy_depth_first_search(&window, &maze.matrix[0][0]);*/
     Pathfinder pathfinder(&maze, 0, 0);
-    pathfinder.depthFirstSearch();
 
     while (window.isOpen()) {
         sf::Event event;
@@ -83,6 +82,10 @@ int main() {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::L)){
             pathfinder.depthFirstSearch(maze.get_cell(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y));
         }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::K)){
+            pathfinder.breadthFirstSearch(maze.get_cell(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y));
+        }
+
         /* WINDOW REFRESH */
         window.clear(BG_COLOR);
 

@@ -2,6 +2,7 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <iostream>
 #include <stack>
+#include <queue>
 
 /*sf::RectangleShape SQUARE( { CELL_SIZE - (WALL_SIZE*2), CELL_SIZE - (WALL_SIZE*2) } );*/
 sf::RectangleShape SQUARE( { CELL_SIZE - (WALL_SIZE*2), CELL_SIZE - (WALL_SIZE*2) } );
@@ -59,7 +60,6 @@ bool Pathfinder::depthFirstSearch(Cell* end) {
     std::stack<Cell*> stack;
     stack.push(position);
 
-    std::cout << "Starting while" << std::endl;
     while (!stack.empty()) {
         if (position == end)
             break;
@@ -81,13 +81,53 @@ bool Pathfinder::depthFirstSearch(Cell* end) {
     if (position == end) {
         while (!stack.empty()) {
             path.push_back(stack.top());
-            std::cout << stack.top()->x << " " << stack.top()->y << std::endl;
             stack.pop();
         }
         std::reverse(path.begin(), path.end());
         return true;
     }
     return false;
+}
+
+void Pathfinder::breadthFirstSearch(Cell* end) {
+    path.clear();
+    maze->resetVisited();
+    bool found = false;
+    std::queue<Cell*> queue;
+    queue.push(position);
+    position->times_visited++;
+
+    std::array<std::array<Cell*, LINE_NUM>, COL_NUM> previous;
+    for (int i = 0; i < LINE_NUM; ++i) {
+        for (int j = 0; j < COL_NUM; ++j) {
+            previous[i][j] = nullptr;
+        }
+    }
+
+    while (!queue.empty()) {
+        Cell* node = queue.front();
+        queue.pop();
+
+        if (node == end) {
+            found = true;
+            break;
+        }
+
+        std::vector<Cell*> neighbors = node->getAcessibleUnvisitedNeighbors();
+        for (Cell* next : neighbors) {
+            queue.push(next);
+            next->times_visited++;
+            previous[next->x][next->y] = node;
+        }
+    }
+
+    if (found) {
+        for (Cell* at = end; at != nullptr; at = previous[at->x][at->y]) {
+            path.push_back(at);
+        }
+        std::reverse(path.begin(), path.end());
+        position = end;
+    }
 }
 
 void Pathfinder::update() {

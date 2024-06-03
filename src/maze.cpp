@@ -98,7 +98,7 @@ Cell* Maze::getFinish(){
 }
 
 void Maze::mazefy_depth_first_search(sf::RenderWindow* window, Cell* cell){
-    window->setFramerateLimit(120);
+    /*window->setFramerateLimit(120);*/
     cell->active = true;
 
     while (!cell->is_dead_end()) {
@@ -130,7 +130,7 @@ void Maze::mazefy_depth_first_search(sf::RenderWindow* window, Cell* cell){
 
         mazefy_depth_first_search(window, neighbor);
     }
-    window->setFramerateLimit(10);
+    /*window->setFramerateLimit(10);*/
 
     for (Pathfinder* pathfinder : pathfinders) {
         pathfinder->update();

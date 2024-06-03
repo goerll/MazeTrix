@@ -39,6 +39,8 @@ public:
 
     void update();
 
+    void breadthFirstSearch(Cell* end);
+
 
     // Verifies if the cell at a relative position can be accessed
     bool is_path(Direction side);
