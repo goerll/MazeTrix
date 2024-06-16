@@ -1,52 +1,49 @@
 #include "../include/pathfinder.h"
-#include <SFML/Graphics/RenderWindow.hpp>
-#include <iostream>
+/*#include <iostream>*/
 #include <stack>
 #include <queue>
 
-sf::RectangleShape PATHFINDER_SQUARE( { CELL_SIZE - (WALL_SIZE*2), CELL_SIZE - (WALL_SIZE*2) } );
-const int shrink = 10;
+/*sf::RectangleShape PATHFINDER_SQUARE( { CELL_SIZE - (WALL_SIZE*2), CELL_SIZE - (WALL_SIZE*2) } );*/
+/*const int shrink = 10;*/
 /*sf::RectangleShape PATH_SQUARE( { CELL_SIZE - (WALL_SIZE*2) - shrink*2, CELL_SIZE - (WALL_SIZE*2) - shrink*2 } );*/
-sf::RectangleShape PATH_SQUARE( { CELL_SIZE, CELL_SIZE } );
+/*sf::RectangleShape PATH_SQUARE( { CELL_SIZE, CELL_SIZE } );*/
 
 Pathfinder::Pathfinder(Maze* maze, int x = 0, int y = 0) : maze(maze), map(maze->toGraph()) {
     position = &maze->matrix[x][y];
-    maze->pathfinders.push_back(this);
+    maze->pathfinder = this;
 }
 
-void Pathfinder::draw (sf::RenderWindow* window) {
-    drawPath(window);
+void Pathfinder::draw () {
+    drawPath();
 
     int x = (this->position->x * CELL_SIZE) + this->maze->x;
     int y = (this->position->y * CELL_SIZE) + this->maze->y;
 
-    PATHFINDER_SQUARE.setFillColor(PATHFINDER_COLOR);
-    PATHFINDER_SQUARE.setPosition(x + WALL_SIZE, y+WALL_SIZE);
-    window->draw(PATHFINDER_SQUARE);
+    DrawRectangle(x + WALL_SIZE, y + WALL_SIZE, CELL_SIZE - (WALL_SIZE*2), CELL_SIZE - (WALL_SIZE*2), PATHFINDER_COLOR);
 }
 
-sf::Color interpolateColor(sf::Color a, sf::Color b, float t) {
-    sf::Color color;
-    color.r = (sf::Uint8)(a.r + (b.r - a.r) * t);
-    color.g = (sf::Uint8)(a.g + (b.g - a.g) * t);
-    color.b = (sf::Uint8)(a.b + (b.b - a.b) * t);
+Color interpolateColor(Color a, Color b, float t) {
+    Color color;
+    color.r = (a.r + (b.r - a.r) * t);
+    color.g = (a.g + (b.g - a.g) * t);
+    color.b = (a.b + (b.b - a.b) * t);
     return color;
 };
 
-void Pathfinder::drawPath(sf::RenderWindow* window) {
-    sf::Color color;
-    sf::Color start = sf::Color::Magenta;
+void Pathfinder::drawPath() {
+    Color color;
+    Color start = MAGENTA;
+
     int i = 0;
+
     for (Cell* cell : path) {
         i++;
         int x = (cell->x * CELL_SIZE) + this->maze->x;
         int y = (cell->y * CELL_SIZE) + this->maze->y;
 
         color = interpolateColor(start, PATHFINDER_COLOR, (float)i/(float)path.size());
-        PATH_SQUARE.setFillColor(color);
-        PATH_SQUARE.setPosition(x + WALL_SIZE, y+WALL_SIZE);
-        window->draw(PATH_SQUARE);
 
+        DrawRectangle(x + WALL_SIZE, y + WALL_SIZE, CELL_SIZE, CELL_SIZE, color);
     }
 }
 
@@ -56,9 +53,7 @@ void Pathfinder::setPosition(Cell* cell) {
 }
 
 bool Pathfinder::isDeadEnd(){
-    if (position->is_dead_end())
-        return true;
-    return false;
+    return position->isDeadEnd();
 }
 
 Cell* Pathfinder::getWay() {
@@ -95,9 +90,11 @@ bool Pathfinder::depthFirstSearch(Cell* end) {
             if (!stack.empty())
                 position = stack.top();
         }
-        maze->window->clear(BG_COLOR);
-        maze->draw(maze->window);
-        maze->window->display();
+
+        BeginDrawing();
+            ClearBackground(BG_COLOR);
+            maze->draw();
+        EndDrawing();
     }
 
     if (position == end) {
@@ -132,9 +129,10 @@ void Pathfinder::breadthFirstSearch(Cell* end) {
         queue.pop();
 
         position = node;
-        maze->window->clear(BG_COLOR);
-        maze->draw(maze->window);
-        maze->window->display();
+        BeginDrawing();
+            ClearBackground(BG_COLOR);
+            maze->draw();
+        EndDrawing();
 
         if (node == end) {
             found = true;
@@ -163,9 +161,4 @@ void Pathfinder::breadthFirstSearch(Cell* end) {
 void Pathfinder::update() {
     path.clear();
     map = maze->toGraph();
-}
-
-
-void Pathfinder::depthFirstSearch() {
-    depthFirstSearch(maze->getFinish());
 }

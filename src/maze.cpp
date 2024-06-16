@@ -3,42 +3,32 @@
 #include "../include/pathfinder.h"
 #include <array>
 #include <cmath>
+#include <iostream>
+#include <stack>
 
-Maze::Maze(int x, int y, sf::RenderWindow* window) : x(x), y(y), window(window) {
+Maze::Maze(int x, int y) : x(x), y(y) {
     for (int cell_x = 0; cell_x < COL_NUM; cell_x++){
         for (int cell_y = 0; cell_y < LINE_NUM; cell_y++){
-            this->matrix[cell_x][cell_y].x = cell_x;
-            this->matrix[cell_x][cell_y].y = cell_y;
-            this->matrix[cell_x][cell_y].maze = this;
+            matrix[cell_x][cell_y] = Cell(this, cell_x, cell_y);
         }
     }
+    pathfinder = new Pathfinder(this, 0, 0);
 }
 
-void Maze::draw(sf::RenderWindow* window){
-    window->setFramerateLimit(120);
-
-    drawCellSquares();
-    for (Pathfinder* pathfinder : pathfinders) {
-        pathfinder->draw(window);
-    }
-    drawCellWalls();
-
-}
-
-void Maze::drawCellWalls() {
+void Maze::draw(){
     for (int x = 0; x < COL_NUM; x++){
         for (int y = 0; y < LINE_NUM; y++){
             if (this->matrix[x][y].active)
-                this->matrix[x][y].drawWalls(window);
+                this->matrix[x][y].drawSquare();
         }
     }
-}
 
-void Maze::drawCellSquares() {
+    pathfinder->draw();
+
     for (int x = 0; x < COL_NUM; x++){
         for (int y = 0; y < LINE_NUM; y++){
             if (this->matrix[x][y].active)
-                this->matrix[x][y].drawSquare(window);
+                this->matrix[x][y].drawWalls();
         }
     }
 }
@@ -50,38 +40,37 @@ void Maze::reset() {
         }
     }
 
-    for (Pathfinder* pathfinder : pathfinders) {
-        pathfinder->update();
-    }
+    pathfinder->path.clear();
 }
 
 std::array<std::array<std::vector<Cell*>, LINE_NUM>, COL_NUM> Maze::toGraph() {
     std::array<std::array<std::vector<Cell*>, LINE_NUM>, COL_NUM> graph;
+
     for (int y = 0; y < LINE_NUM; y++){
         for (int x = 0; x < COL_NUM; x++){
             graph[x][y] = this->matrix[x][y].getAcessibleNeighbors();
 
             // Print out the adjacency list generated
-            /*std::cout << "Cell[" << x << "][" << y << "]: ";*/
-            /*for (Cell* cell : graph[x][y]) {*/
-                /*std::cout << "(" << cell->x << "," << cell->y << ")";*/
-            /*}*/
-            /*std::cout << std::endl;*/
+            std::cout << "Cell[" << x << "][" << y << "]: ";
+            for (Cell* cell : graph[x][y]) {
+                std::cout << "(" << cell->x << "," << cell->y << ")";
+            }
+            std::cout << std::endl;
         }
     }
 
     return graph;
 }
 
-Cell* Maze::get_cell(float x, float y){
-    float index_x = floor(x/CELL_SIZE);
-    float index_y = floor(y/CELL_SIZE);
+Cell* Maze::getCell(Vector2 coord) {
+    int index_x = (coord.x - this->x)/CELL_SIZE;
+    int index_y = (coord.y - this->y)/CELL_SIZE;
 
+    std::cout << index_x << ", " << index_y << std::endl;
     return &(this->matrix[index_x][index_y]);
 }
 
-void Maze::mazefy_binary_tree(sf::RenderWindow* window){
-    window->setFramerateLimit(120);
+void Maze::mazefyBinaryTree(){
     for (int x = 0; x < COL_NUM; x++){
         for (int y = 0; y < LINE_NUM; y++){
             this->matrix[x][y].active = true;
@@ -102,60 +91,64 @@ void Maze::mazefy_binary_tree(sf::RenderWindow* window){
                 }
             }
 
-            window->clear(BG_COLOR);
-            this->draw(window);
-            window->display();
+            BeginDrawing();
+                ClearBackground(BG_COLOR);
+                this->draw();
+            EndDrawing();
         }
     }
-    window->setFramerateLimit(10);
-
-    for (Pathfinder* pathfinder : pathfinders) {
-        pathfinder->update();
-    }
+    pathfinder->update();
 }
 
-Cell* Maze::getFinish(){
-    return &(this->matrix[LINE_NUM - 1][COL_NUM - 1]);
-}
-
-void Maze::mazefy_depth_first_search(sf::RenderWindow* window, Cell* cell){
-    /*window->setFramerateLimit(120);*/
+void Maze::mazefyDepthFirstSearch(Cell* cell) {
+    this->reset();
+    std::stack<Cell*> stack;
     cell->active = true;
+    cell->times_visited++;
+    stack.push(cell);
 
-    while (!cell->is_dead_end()) {
-        Cell* neighbor = cell->getRandomNeighbor(cell->getUnvisitedNeighbors());
-        neighbor->times_visited++;
+    while (!stack.empty()) {
+        Cell* nextCell = cell->getRandomNeighbor(cell->getUnvisitedNeighbors());
 
-        if (cell->x > neighbor->x) {
-            cell->wall_left = false;
-            neighbor->wall_right = false;
-        }
-        else if (cell->x < neighbor->x) {
-            cell->wall_right = false;
-            neighbor->wall_left = false;
-        }
-        else if (cell->y > neighbor->y) {
-            cell->wall_up = false;
-            neighbor->wall_down = false;
-        }
-        else if (cell->y < neighbor->y) {
-            cell->wall_down = false;
-            neighbor->wall_up = false;
+        if (nextCell) {
+
+            if (cell->x > nextCell->x) {
+                cell->wall_left = false;
+                nextCell->wall_right = false;
+            }
+            else if (cell->x < nextCell->x) {
+                cell->wall_right = false;
+                nextCell->wall_left = false;
+            }
+            else if (cell->y > nextCell->y) {
+                cell->wall_up = false;
+                nextCell->wall_down = false;
+            }
+            else if (cell->y < nextCell->y) {
+                cell->wall_down = false;
+                nextCell->wall_up = false;
+            }
+
+            cell = nextCell;
+            cell->times_visited++;
+            cell->active = true;
+            stack.push(cell);
         }
 
-        window->clear(BG_COLOR);
-        cell->draw(window);
-        neighbor->draw(window);
-        this->draw(window);
-        window->display();
+        else {
+            stack.pop();
+            if (!stack.empty())
+                cell = stack.top();
+        }
 
-        mazefy_depth_first_search(window, neighbor);
+        BeginDrawing();
+            ClearBackground(BG_COLOR);
+            this->draw();
+        EndDrawing();
+
     }
-    /*window->setFramerateLimit(10);*/
 
-    for (Pathfinder* pathfinder : pathfinders) {
-        pathfinder->update();
-    }
+    pathfinder->update();
 }
 
 void Maze::resetVisited(){

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <SFML/Graphics.hpp>
 #include "global.h"
 
 class Maze;
@@ -18,36 +17,41 @@ public:
     Cell(Maze* maze = nullptr, int x = 0, int y = 0);
 
     // State
-    bool active{ true };
-    bool highlighted{ false };
+    bool active;
+    bool highlighted;
 
-    bool wall_up{ true };
-    bool wall_down{ true };
-    bool wall_left{ true };
-    bool wall_right{ true };
+    // Walls
+    bool wall_up;
+    bool wall_down;
+    bool wall_left;
+    bool wall_right;
 
+    // Number of times the cell has been visited
     int times_visited { 0 };
 
     // Draw cell respecting state variables
-    void draw(sf::RenderWindow* window);
+    void draw();
+    // Draw cell walls
+    void drawWalls();
+    // Draw cell square
+    void drawSquare();
 
-    void drawWalls(sf::RenderWindow* window);
-
-    void drawSquare(sf::RenderWindow* window);
-    // Draw cell as if it was highlighted
-    void draw_highlighted(sf::RenderWindow* window);
-    // Get a neighbor from a specific direction
-    Cell* getNeighbor(Direction direction);
     // Verify if a cell is acessible from current cell
     bool isAcessible(Cell* cell);
+    // Verify if a cell is a dead end (has no unvisited neighbours)
+    bool isDeadEnd();
+
+    // Neighbor acess methods
+    // Get a neighbor from a specific direction
+    Cell* getNeighbor(Direction direction);
     // Get all neighbors
     std::vector<Cell*> getNeighbors();
     // Get all neighbors acessible (with no walls in between)
     std::vector<Cell*> getAcessibleNeighbors();
+    // Get all unvisited neighbors
     std::vector<Cell*> getUnvisitedNeighbors();
+    // Get all acessible unvisited neighbors
     std::vector<Cell*> getAcessibleUnvisitedNeighbors();
+    // Get a random neighbor from a list of neighbors
     Cell* getRandomNeighbor(std::vector<Cell*> potential_neighbors);
-    Cell* random_unvisited_neighbor();
-    // Verify if a cell is a dead end (has no unvisited neighbours)
-    bool is_dead_end();
 };
