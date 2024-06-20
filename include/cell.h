@@ -1,15 +1,16 @@
 #pragma once
 
 #include "global.h"
+#include "structs.h"
 
 class Cell {
 public:
     // Position in the maze
-    int x;
-    int y;
+    Vector2i position;
 
     // Constructor
-    Cell(int x = 0, int y = 0);
+    Cell();
+    Cell(Vector2i position);
 
     // State
     bool active;
@@ -24,9 +25,9 @@ public:
     int times_visited;
 
     // Draw cell respecting state variables
-    void draw(int offsetX, int offsetY);;
+    void draw(Vector2i offset);
     // Draw cell walls
-    void drawWalls(int offsetX, int offsetY);
+    void drawWalls(Vector2i offset);
     // Draw cell square
-    void drawSquare(int offsetX, int offsetY);
+    void drawSquare(Vector2i offset);
 };

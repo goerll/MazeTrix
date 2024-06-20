@@ -1,19 +1,20 @@
 #pragma once
-
-#include "maze.h"
+#include "structs.h"
 #include <vector>
 #include <algorithm>
 
+class Maze;
 class Pathfinder{
 public:
-    std::vector<Cell*> path;
-    std::array<std::array<std::vector<Cell*>, LINE_NUM>, COL_NUM> map;
+    std::vector<Vector2i> path;
+    std::vector<std::vector<std::vector<Vector2i>>> map;
 
     Maze* maze;
-    Cell* position;
+    Vector2i position;
 
     // Constructor
     Pathfinder(Maze* maze);
+    ~Pathfinder() = default;
 
     // Draw the pathfinder (path included)
     void draw();
@@ -21,15 +22,14 @@ public:
     // Verifies if pathfinder is in dead end
     bool isDeadEnd();
     // Random viable way
-    Cell* getWay();
+    Vector2i getWay();
     // Change pathfinder position
-    void setPosition(Cell* cell);
+    void setPosition(Vector2i cell);
     // Update pathfinder's graph map and clear current path
     void update();
 
     // Depth first search
-    void depthFirstSearch(Cell* end);
-
+    void depthFirstSearch(Vector2i end);
     // Breath first search
-    void breadthFirstSearch(Cell* end);
+    void breadthFirstSearch(Vector2i end);
 };
