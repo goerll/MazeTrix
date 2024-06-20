@@ -1,44 +1,44 @@
 [
 {
-  "directory": "/tmp/MazeTrix",
-  "command": "/usr/bin/c++  -I/tmp/MazeTrix/include -I/tmp/MazeTrix/raylib/include  -Wall -Wextra -O3 -DNDEBUG -Wall -Wextra -O3 -o CMakeFiles/MazeTrix.dir/main.cpp.o -c /tmp/MazeTrix/main.cpp",
-  "file": "/tmp/MazeTrix/main.cpp",
+  "directory": "/home/estevao/RayTrix",
+  "command": "/usr/bin/c++  -I/home/estevao/RayTrix/include -I/home/estevao/RayTrix/raylib/include  -Wall -Wextra -g -Wall -Wextra -g3 -fsanitize=address,undefined -o CMakeFiles/MazeTrix.dir/main.cpp.o -c /home/estevao/RayTrix/main.cpp",
+  "file": "/home/estevao/RayTrix/main.cpp",
   "output": "CMakeFiles/MazeTrix.dir/main.cpp.o"
 },
 {
-  "directory": "/tmp/MazeTrix",
-  "command": "/usr/bin/c++  -I/tmp/MazeTrix/include -I/tmp/MazeTrix/raylib/include  -Wall -Wextra -O3 -DNDEBUG -Wall -Wextra -O3 -o CMakeFiles/MazeTrix.dir/src/cell.cpp.o -c /tmp/MazeTrix/src/cell.cpp",
-  "file": "/tmp/MazeTrix/src/cell.cpp",
+  "directory": "/home/estevao/RayTrix",
+  "command": "/usr/bin/c++  -I/home/estevao/RayTrix/include -I/home/estevao/RayTrix/raylib/include  -Wall -Wextra -g -Wall -Wextra -g3 -fsanitize=address,undefined -o CMakeFiles/MazeTrix.dir/src/cell.cpp.o -c /home/estevao/RayTrix/src/cell.cpp",
+  "file": "/home/estevao/RayTrix/src/cell.cpp",
   "output": "CMakeFiles/MazeTrix.dir/src/cell.cpp.o"
 },
 {
-  "directory": "/tmp/MazeTrix",
-  "command": "/usr/bin/c++  -I/tmp/MazeTrix/include -I/tmp/MazeTrix/raylib/include  -Wall -Wextra -O3 -DNDEBUG -Wall -Wextra -O3 -o CMakeFiles/MazeTrix.dir/src/maze.cpp.o -c /tmp/MazeTrix/src/maze.cpp",
-  "file": "/tmp/MazeTrix/src/maze.cpp",
+  "directory": "/home/estevao/RayTrix",
+  "command": "/usr/bin/c++  -I/home/estevao/RayTrix/include -I/home/estevao/RayTrix/raylib/include  -Wall -Wextra -g -Wall -Wextra -g3 -fsanitize=address,undefined -o CMakeFiles/MazeTrix.dir/src/maze.cpp.o -c /home/estevao/RayTrix/src/maze.cpp",
+  "file": "/home/estevao/RayTrix/src/maze.cpp",
   "output": "CMakeFiles/MazeTrix.dir/src/maze.cpp.o"
 },
 {
-  "directory": "/tmp/MazeTrix",
-  "command": "/usr/bin/c++  -I/tmp/MazeTrix/include -I/tmp/MazeTrix/raylib/include  -Wall -Wextra -O3 -DNDEBUG -Wall -Wextra -O3 -o CMakeFiles/MazeTrix.dir/src/pathfinder.cpp.o -c /tmp/MazeTrix/src/pathfinder.cpp",
-  "file": "/tmp/MazeTrix/src/pathfinder.cpp",
+  "directory": "/home/estevao/RayTrix",
+  "command": "/usr/bin/c++  -I/home/estevao/RayTrix/include -I/home/estevao/RayTrix/raylib/include  -Wall -Wextra -g -Wall -Wextra -g3 -fsanitize=address,undefined -o CMakeFiles/MazeTrix.dir/src/pathfinder.cpp.o -c /home/estevao/RayTrix/src/pathfinder.cpp",
+  "file": "/home/estevao/RayTrix/src/pathfinder.cpp",
   "output": "CMakeFiles/MazeTrix.dir/src/pathfinder.cpp.o"
 },
 {
-  "directory": "/tmp/MazeTrix",
-  "command": "/usr/bin/c++  -I/tmp/MazeTrix/include -I/tmp/MazeTrix/raylib/include  -Wall -Wextra -O3 -DNDEBUG -Wall -Wextra -O3 -o CMakeFiles/MazeTrix.dir/src/race.cpp.o -c /tmp/MazeTrix/src/race.cpp",
-  "file": "/tmp/MazeTrix/src/race.cpp",
+  "directory": "/home/estevao/RayTrix",
+  "command": "/usr/bin/c++  -I/home/estevao/RayTrix/include -I/home/estevao/RayTrix/raylib/include  -Wall -Wextra -g -Wall -Wextra -g3 -fsanitize=address,undefined -o CMakeFiles/MazeTrix.dir/src/race.cpp.o -c /home/estevao/RayTrix/src/race.cpp",
+  "file": "/home/estevao/RayTrix/src/race.cpp",
   "output": "CMakeFiles/MazeTrix.dir/src/race.cpp.o"
 },
 {
-  "directory": "/tmp/MazeTrix",
-  "command": "/usr/bin/c++  -I/tmp/MazeTrix/include -I/tmp/MazeTrix/raylib/include  -Wall -Wextra -O3 -DNDEBUG -Wall -Wextra -O3 -o CMakeFiles/MazeTrix.dir/src/random.cpp.o -c /tmp/MazeTrix/src/random.cpp",
-  "file": "/tmp/MazeTrix/src/random.cpp",
+  "directory": "/home/estevao/RayTrix",
+  "command": "/usr/bin/c++  -I/home/estevao/RayTrix/include -I/home/estevao/RayTrix/raylib/include  -Wall -Wextra -g -Wall -Wextra -g3 -fsanitize=address,undefined -o CMakeFiles/MazeTrix.dir/src/random.cpp.o -c /home/estevao/RayTrix/src/random.cpp",
+  "file": "/home/estevao/RayTrix/src/random.cpp",
   "output": "CMakeFiles/MazeTrix.dir/src/random.cpp.o"
 },
 {
-  "directory": "/tmp/MazeTrix",
-  "command": "/usr/bin/c++  -I/tmp/MazeTrix/include -I/tmp/MazeTrix/raylib/include  -Wall -Wextra -O3 -DNDEBUG -Wall -Wextra -O3 -o CMakeFiles/MazeTrix.dir/src/structs.cpp.o -c /tmp/MazeTrix/src/structs.cpp",
-  "file": "/tmp/MazeTrix/src/structs.cpp",
+  "directory": "/home/estevao/RayTrix",
+  "command": "/usr/bin/c++  -I/home/estevao/RayTrix/include -I/home/estevao/RayTrix/raylib/include  -Wall -Wextra -g -Wall -Wextra -g3 -fsanitize=address,undefined -o CMakeFiles/MazeTrix.dir/src/structs.cpp.o -c /home/estevao/RayTrix/src/structs.cpp",
+  "file": "/home/estevao/RayTrix/src/structs.cpp",
   "output": "CMakeFiles/MazeTrix.dir/src/structs.cpp.o"
 }
 ]

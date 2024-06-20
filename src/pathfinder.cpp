@@ -2,8 +2,9 @@
 #include "../include/pathfinder.h"
 #include "../include/maze.h"
 #include "../include/global.h"
+#include <algorithm>
 
-Pathfinder::Pathfinder(Maze* maze) : position({0,0}), maze(maze), map(maze->toGraph()) {};
+Pathfinder::Pathfinder(Maze* maze) : map(maze->toGraph()), maze(maze), position({0,0}) {};
 
 Color interpolateColor(Color a, Color b, float t) {
     return {
@@ -52,7 +53,7 @@ Vector2i Pathfinder::getWay() {
         return {-1, -1};
     }
 
-    for (int i = 0; i < map[position.x][position.y].size(); i++) {
+    for (size_t i = 0; i < map[position.x][position.y].size(); i++) {
         if (maze->getCell(map[position.x][position.y][i]).times_visited == 0) {
             return map[position.x][position.y][i];
         }

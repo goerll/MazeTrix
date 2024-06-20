@@ -1,7 +1,7 @@
 #pragma once
 
 #include "maze.h"
-#include <array>
+#include <raylib.h>
 
 class Race {
     std::vector<Maze> mazeGrid;

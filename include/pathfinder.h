@@ -1,7 +1,6 @@
 #pragma once
 #include "structs.h"
 #include <vector>
-#include <algorithm>
 
 class Maze;
 class Pathfinder{

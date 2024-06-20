@@ -14,9 +14,9 @@ Maze::Maze() : Maze(Vector2i{0, 0}) {}
 Maze::Maze(Vector2i pos) : position(pos),
                            matrix(COL_NUM, std::vector<Cell>(LINE_NUM)),
                            pathfinder(std::make_unique<Pathfinder>(this)) {
-    for (int x = 0; x < matrix.size(); x++)
-        for (int y = 0; y < matrix.at(x).size(); y++)
-            matrix.at(x).at(y).position = {x, y};
+    for (size_t x = 0; x < matrix.size(); x++)
+    for (size_t y = 0; y < matrix.at(x).size(); y++)
+            matrix.at(x).at(y).position = {static_cast<int>(x), static_cast<int>(y)};
 }
 
 void Maze::draw(){
@@ -34,15 +34,16 @@ void Maze::draw(){
 }
 
 void Maze::reset() {
-  for (int x = 0; x < matrix.size(); x++)
-      for (int y = 0; y < matrix.at(x).size(); y++)
-            matrix[x][y] = Cell({x, y});
+  for (size_t x = 0; x < matrix.size(); x++)
+  for (size_t y = 0; y < matrix.at(x).size(); y++)
+            matrix[x][y] = Cell({static_cast<int>(x), static_cast<int>(y)});
 
     pathfinder->path.clear();
 }
 
 void Maze::copyMatrix(const Maze &maze) {
-    std::memcpy(&this->matrix, &maze.matrix, sizeof(matrix));
+    // std::memcpy(&this->matrix, &maze.matrix, sizeof(matrix));
+    this->matrix = maze.matrix;
 }
 
 std::vector<std::vector<std::vector<Vector2i>>> Maze::toGraph() {
@@ -80,38 +81,57 @@ Vector2i Maze::getMouseCell() {
     return {-1, -1};
 }
 
-bool isAccessible2(Vector2i cell, Vector2i neighbor) {
-    if (abs(neighbor.x - cell.x) > 1 || abs(neighbor.x - cell.x) > 1) return false;
-    if (neighbor.x < 0 || neighbor.x > COL_NUM-1) return false;
-    if (neighbor.y < 0 || neighbor.x > LINE_NUM-1) return false;
-
-    return false;
-
-
-
-}
-
 bool Maze::isAccessible(Vector2i cell, Vector2i neighbor) {
-    std::cout << "Cell[" << cell.x << "][" << cell.y << "] -> Cell[" << neighbor.x << "][" << neighbor.y << "]" << std::endl;
-    if (neighbor.x > COL_NUM-1 || neighbor.y > LINE_NUM-1)
-        return false;
+    Vector2i notgood = {-1, -1};
+    assert(cell != neighbor);
+    assert(cell != notgood);
+    assert(neighbor != notgood);
+    assert(!(abs(neighbor.x - cell.x) > 1 || abs(neighbor.x - cell.x) > 1));
+    assert(!(neighbor.x < 0 || neighbor.x > COL_NUM-1));
+    assert(!(neighbor.y < 0 || neighbor.x > LINE_NUM-1));
+
+    Cell& c = getCell(cell);
+    bool w_l = c.wall_left;
+    bool w_r = c.wall_right;
+    bool w_u = c.wall_up;
+    bool w_d = c.wall_down;
 
     if (neighbor.x == cell.x) {
-        if (neighbor.y == cell.y - 1 && !(getCell(cell).wall_up))
+        if (neighbor.y < cell.y && !w_u)
             return true;
-        else if (neighbor.y == cell.y + 1 && !(getCell(cell).wall_down))
+        if (neighbor.y > cell.y && !w_d)
             return true;
     }
 
-    else if (neighbor.y == cell.y) {
-        if (neighbor.x == cell.x - 1 && !(getCell(cell).wall_left))
+    if (neighbor.y == cell.y) {
+        if (neighbor.x < cell.x && !w_l)
             return true;
-        else if (neighbor.x == cell.x + 1 && !(getCell(cell).wall_right))
+        if (neighbor.x > cell.x && !w_r)
             return true;
     }
 
     return false;
 }
+
+// bool Maze::isAccessible(Vector2i cell, Vector2i neighbor) {
+//     if (neighbor.x == cell.x) {
+//         if (neighbor.y == cell.y - 1) {
+//             return !(getCell(cell).wall_up);
+//         }
+//         else if (neighbor.y == cell.y + 1) {
+//             return !(getCell(cell).wall_down);
+//         }
+//     }
+//     else if (neighbor.y == cell.y) {
+//         if (neighbor.x == cell.x - 1) {
+//             return !(getCell(cell).wall_left);
+//         }
+//         else if (neighbor.x == cell.x + 1) {
+//             return !(getCell(cell).wall_right);
+//         }
+//     }
+//     return false;
+// }
 
 bool Maze::isDeadEnd(Vector2i cell) {
     return getUnvisitedNeighbors(cell).empty();
@@ -274,7 +294,7 @@ void Maze::mazefyDepthFirstSearch(Vector2i cell) {
 }
 
 void Maze::resetVisited(){
-    for (auto y : matrix)
-        for (auto x : y)
+    for (auto& y : matrix)
+        for (auto& x : y)
             x.times_visited = 0;
 }

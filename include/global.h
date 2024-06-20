@@ -1,7 +1,5 @@
 #pragma once
 
-#include <random>
-#include <array>
 #include <raylib.h>
 
 // COLOR VARIABLES

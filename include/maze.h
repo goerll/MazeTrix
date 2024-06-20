@@ -2,8 +2,7 @@
 
 #include "pathfinder.h"
 #include "cell.h"
-#include <array>
-#include <list>
+#include "global.h"
 #include <memory>
 
 class Maze {
