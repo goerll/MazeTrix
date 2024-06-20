@@ -4,7 +4,7 @@
 #include <raylib.h>
 
 class Race {
-    std::vector<Maze> mazeGrid;
+    std::vector<std::unique_ptr<Maze>> mazeGrid;
 
 public:
     Race();
