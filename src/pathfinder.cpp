@@ -1,9 +1,9 @@
-#include "../include/pathfinder.h"
 #include <queue>
+#include "../include/pathfinder.h"
+#include "../include/maze.h"
+#include "../include/global.h"
 
-Pathfinder::Pathfinder(Maze* maze) : maze(maze), map(maze->toGraph()) {
-    position = &maze->matrix[0][0];
-}
+Pathfinder::Pathfinder(Maze* maze) : position({0,0}), maze(maze), map(maze->toGraph()) {};
 
 Color interpolateColor(Color a, Color b, float t) {
     return {
@@ -21,10 +21,10 @@ void Pathfinder::draw () {
 
     int i = 0;
 
-    for (Cell* cell : path) {
+    for (Vector2i cell : path) {
         i++;
-        int x = (cell->x * CELL_SIZE) + this->maze->x;
-        int y = (cell->y * CELL_SIZE) + this->maze->y;
+        int x = (cell.x * CELL_SIZE) + this->maze->position.x;
+        int y = (cell.y * CELL_SIZE) + this->maze->position.y;
 
         color = interpolateColor(start, PATHFINDER_COLOR, i/(float)path.size());
 
@@ -32,13 +32,13 @@ void Pathfinder::draw () {
     }
 
     // Draw pathfinder
-    int x = (this->position->x * CELL_SIZE) + this->maze->x;
-    int y = (this->position->y * CELL_SIZE) + this->maze->y;
+    int x = (this->position.x * CELL_SIZE) + this->maze->position.x;
+    int y = (this->position.y * CELL_SIZE) + this->maze->position.y;
 
     DrawRectangle(x + WALL_SIZE, y + WALL_SIZE, CELL_SIZE - (WALL_SIZE*2), CELL_SIZE - (WALL_SIZE*2), PATHFINDER_COLOR);
 }
 
-void Pathfinder::setPosition(Cell* cell) {
+void Pathfinder::setPosition(Vector2i cell) {
     position = cell;
     path.clear();
 }
@@ -47,16 +47,22 @@ bool Pathfinder::isDeadEnd(){
     return maze->isDeadEnd(position);
 }
 
-Cell* Pathfinder::getWay() {
-    for (int i = 0; i < map[position->x][position->y].size(); i++) {
-        if (map[position->x][position->y][i]->times_visited == 0) {
-            return map[position->x][position->y][i];
+Vector2i Pathfinder::getWay() {
+    if (isDeadEnd()) {
+        return {-1, -1};
+    }
+
+    for (int i = 0; i < map[position.x][position.y].size(); i++) {
+        if (maze->getCell(map[position.x][position.y][i]).times_visited == 0) {
+            return map[position.x][position.y][i];
         }
     }
-    return nullptr;
+    return {-1, -1};
 }
 
-void Pathfinder::depthFirstSearch(Cell* end) {
+void Pathfinder::depthFirstSearch(Vector2i end) {
+    if (end == Vector2i{-1, -1})
+        return;
     path.clear();
     maze->resetVisited();
     path.push_back(position);
@@ -65,11 +71,12 @@ void Pathfinder::depthFirstSearch(Cell* end) {
         if (position == end)
             break;
 
-        Cell* nextCell = getWay();
+        Vector2i nextCell = getWay();
 
-        if (nextCell != nullptr) {
+        if (nextCell != Vector2i{-1, -1}) {
             position = nextCell;
-            position->times_visited++;
+            maze->getCell(position).times_visited++;
+            // position->times_visited++;
             path.push_back(position);
         }
         else {
@@ -85,24 +92,25 @@ void Pathfinder::depthFirstSearch(Cell* end) {
     }
 }
 
-void Pathfinder::breadthFirstSearch(Cell* end) {
+void Pathfinder::breadthFirstSearch(Vector2i end) {
+    if (end == Vector2i{-1, -1})
+        return;
+
+    using std::vector;
+
     path.clear();
     maze->resetVisited();
     bool found = false;
-    std::queue<Cell*> queue;
+    std::queue<Vector2i> queue;
+
     queue.push(position);
     path.push_back(position);
-    position->times_visited++;
+    maze->getCell(position).times_visited++;
 
-    std::array<std::array<Cell*, LINE_NUM>, COL_NUM> previous;
-    for (int i = 0; i < LINE_NUM; ++i) {
-        for (int j = 0; j < COL_NUM; ++j) {
-            previous[i][j] = nullptr;
-        }
-    }
+    vector<vector<Vector2i>> previous(COL_NUM, vector<Vector2i>(LINE_NUM, {-1, -1}));
 
     while (!queue.empty()) {
-        Cell* node = queue.front();
+        Vector2i node = queue.front();
         queue.pop();
 
         position = node;
@@ -116,18 +124,18 @@ void Pathfinder::breadthFirstSearch(Cell* end) {
             break;
         }
 
-        std::vector<Cell*> neighbors = maze->getAcessibleUnvisitedNeighbors(node);
-        for (Cell* next : neighbors) {
+        vector<Vector2i> neighbors = maze->getAcessibleUnvisitedNeighbors(node);
+        for (Vector2i next : neighbors) {
             queue.push(next);
             path.push_back(next);
-            next->times_visited++;
-            previous[next->x][next->y] = node;
+            maze->getCell(next).times_visited++;
+            previous[next.x][next.y] = node;
         }
     }
 
     if (found) {
         path.clear();
-        for (Cell* at = end; at != nullptr; at = previous[at->x][at->y]) {
+        for (Vector2i at = end; at != Vector2i{-1, -1}; at = previous[at.x][at.y]) {
             path.push_back(at);
         }
         std::reverse(path.begin(), path.end());
