@@ -7,6 +7,7 @@
 #include <iostream>
 #include <raylib.h>
 #include <stack>
+#include <cassert>
 
 Maze::Maze() : Maze(Vector2i{0, 0}) {}
 
@@ -79,11 +80,15 @@ Vector2i Maze::getMouseCell() {
     return {-1, -1};
 }
 
-bool isAccessible(Vector2i cell, Vector2i neighbor) {
-    if (abs(neighbor.x - cell.x) > 1 || abs(neighbor.x - cell.x) > 1)
-        return false;
-        
-        
+bool isAccessible2(Vector2i cell, Vector2i neighbor) {
+    if (abs(neighbor.x - cell.x) > 1 || abs(neighbor.x - cell.x) > 1) return false;
+    if (neighbor.x < 0 || neighbor.x > COL_NUM-1) return false;
+    if (neighbor.y < 0 || neighbor.x > LINE_NUM-1) return false;
+
+    return false;
+
+
+
 }
 
 bool Maze::isAccessible(Vector2i cell, Vector2i neighbor) {
@@ -105,9 +110,7 @@ bool Maze::isAccessible(Vector2i cell, Vector2i neighbor) {
             return true;
     }
 
-    std::cout
     return false;
-
 }
 
 bool Maze::isDeadEnd(Vector2i cell) {

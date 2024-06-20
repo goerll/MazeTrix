@@ -124,7 +124,7 @@ void Pathfinder::breadthFirstSearch(Vector2i end) {
             break;
         }
 
-        vector<Vector2i> neighbors = maze->getAcessibleUnvisitedNeighbors(node);
+        vector<Vector2i> neighbors = maze->getAccessibleUnvisitedNeighbors(node);
         for (Vector2i next : neighbors) {
             queue.push(next);
             path.push_back(next);
