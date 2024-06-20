@@ -12,10 +12,10 @@ int main() {
             race.reset();
 
         if (IsKeyPressed(KEY_D))
-            race.mazefyDepthFirst(GetMousePosition());
+            race.mazefyDepthFirst();
 
         if (IsKeyPressed(KEY_B))
-            race.mazefyBinaryTree(GetMousePosition());
+            race.mazefyBinaryTree();
 
         BeginDrawing();
             ClearBackground(BG_COLOR);

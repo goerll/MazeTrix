@@ -1,56 +1,57 @@
 #pragma once
 
+#include "pathfinder.h"
 #include "cell.h"
 #include <array>
 #include <list>
 #include <memory>
 
-class Pathfinder;
-
 class Maze {
 public:
-    std::array<std::array<Cell, LINE_NUM>, COL_NUM> matrix;
-    Pathfinder* pathfinder;
-
-    int x, y;
+    Vector2i position;
+    std::vector<std::vector<Cell>> matrix;
+    std::unique_ptr<Pathfinder> pathfinder;
 
     // Constructor
     Maze();
-    Maze(int x, int y);
-    Maze(Maze &maze);
+    Maze(Vector2i pos);
 
     // Generate graph representation
-    std::array<std::array<std::vector<Cell*>, LINE_NUM>, COL_NUM> toGraph();
+    std::vector<std::vector<std::vector<Vector2i>>> toGraph();
     // Draw the maze on the screen
     void draw();
+    // Copy the cell states of another maze
+    void copyMatrix(const Maze& maze);
     // Reset the matrix's cells to their default state
     void reset();
     // Reset the number of times each cell has been visited
     void resetVisited();
+    // Get cell coordinates at mouse position, if applicable
+    Vector2i getMouseCell();
     // Get the cell that is at a specific screen coordinate
-    Cell* getCell(Vector2 coord);
+    Cell& getCell(Vector2i cell);
 
     // Cell neighbor functions
     // Verify if a cell is acessible from current cell
-    bool isAcessible(Cell* cell, Cell* neighbor);
+    bool isAccessible(Vector2i cell, Vector2i neighbor);
     // Verify if a cell is a dead end (has no unvisited neighbours)
-    bool isDeadEnd(Cell* cell);
+    bool isDeadEnd(Vector2i cell);
     // Get a neighbor from a specific direction
-    Cell* getNeighbor(Cell* cell, Direction direction);
+    Vector2i getNeighbor(Vector2i cell, Direction direction);
     // Get all neighbors
-    std::vector<Cell*> getNeighbors(Cell* cell);
+    std::vector<Vector2i> getNeighbors(Vector2i cell);
     // Get all neighbors acessible (with no walls in between)
-    std::vector<Cell*> getAcessibleNeighbors(Cell* cell);
+    std::vector<Vector2i> getAccessibleNeighbors(Vector2i cell);
     // Get all unvisited neighbors
-    std::vector<Cell*> getUnvisitedNeighbors(Cell* cell);
+    std::vector<Vector2i> getUnvisitedNeighbors(Vector2i cell);
     // Get all acessible unvisited neighbors
-    std::vector<Cell*> getAcessibleUnvisitedNeighbors(Cell* cell);
+    std::vector<Vector2i> getAccessibleUnvisitedNeighbors(Vector2i cell);
     // Get a random neighbor from a list of neighbors
-    Cell* getRandomNeighbor(std::vector<Cell*> potentialNeighbors);
+    Vector2i getRandomNeighbor(std::vector<Vector2i> potentialNeighbors);
 
     // Maze Generation
     // Turn the matrix into a maze using the binary tree algorithm
     void mazefyBinaryTree();
     // Turn the matrix into a maze using the depth first search algorithm
-    void mazefyDepthFirstSearch(Cell* cell);
+    void mazefyDepthFirstSearch(Vector2i startCell);
 };

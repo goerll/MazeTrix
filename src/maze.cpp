@@ -1,182 +1,188 @@
 #include "../include/maze.h"
 #include "../include/random.h"
 #include "../include/pathfinder.h"
-#include <array>
 #include <cmath>
+#include <cstdlib>
+#include <cstring>
 #include <iostream>
+#include <raylib.h>
 #include <stack>
 
+Maze::Maze() : Maze(Vector2i{0, 0}) {}
 
-Maze::Maze() : x(0), y(0) {
-  for (int x = 0; x < COL_NUM; x++)
-        for (int y = 0; y < LINE_NUM; y++)
-            matrix[x][y] = Cell(x, y);
-}
-
-Maze::Maze(int x, int y) : x(x), y(y) {
-    for (int x = 0; x < COL_NUM; x++)
-      for (int y = 0; y < LINE_NUM; y++)
-          matrix[x][y] = Cell(x, y);
-
-    pathfinder = new Pathfinder(this);
-}
-
-Maze::Maze(Maze &maze) {
-    for (int x = 0; x < COL_NUM; x++)
-        for (int y = 0; y < LINE_NUM; y++)
-            matrix[x][y] = maze.matrix[x][y];
+Maze::Maze(Vector2i pos) : position(pos),
+                           matrix(COL_NUM, std::vector<Cell>(LINE_NUM)),
+                           pathfinder(std::make_unique<Pathfinder>(this)) {
+    for (int x = 0; x < matrix.size(); x++)
+        for (int y = 0; y < matrix.at(x).size(); y++)
+            matrix.at(x).at(y).position = {x, y};
 }
 
 void Maze::draw(){
     for (int x = 0; x < COL_NUM; x++)
         for (int y = 0; y < LINE_NUM; y++)
             if (matrix[x][y].active)
-                matrix[x][y].drawSquare(this->x, this->y);
+                matrix[x][y].drawSquare(position);
 
     pathfinder->draw();
 
     for (int x = 0; x < COL_NUM; x++)
         for (int y = 0; y < LINE_NUM; y++)
             if (matrix[x][y].active)
-                matrix[x][y].drawWalls(this->x, this->y);
-
-
+                matrix[x][y].drawWalls(position);
 }
 
 void Maze::reset() {
-    for (int x = 0; x < LINE_NUM; ++x)
-        for (int y = 0; y < COL_NUM; ++y)
-            matrix[x][y] = Cell(x, y);
+  for (int x = 0; x < matrix.size(); x++)
+      for (int y = 0; y < matrix.at(x).size(); y++)
+            matrix[x][y] = Cell({x, y});
 
     pathfinder->path.clear();
 }
 
-std::array<std::array<std::vector<Cell*>, LINE_NUM>, COL_NUM> Maze::toGraph() {
-    std::array<std::array<std::vector<Cell*>, LINE_NUM>, COL_NUM> graph;
+void Maze::copyMatrix(const Maze &maze) {
+    std::memcpy(&this->matrix, &maze.matrix, sizeof(matrix));
+}
+
+std::vector<std::vector<std::vector<Vector2i>>> Maze::toGraph() {
+    using std::vector;
+
+    vector<vector<vector<Vector2i>>> graph(COL_NUM, vector<vector<Vector2i>>(LINE_NUM, vector<Vector2i>()));
+
     for (int y = 0; y < LINE_NUM; y++)
         for (int x = 0; x < COL_NUM; x++){
-            graph[x][y] = getAcessibleNeighbors(&matrix[x][y]);
+            graph[x][y] = getAccessibleNeighbors({x, y});
 
             // Print out the adjacency list generated
             std::cout << "Cell[" << x << "][" << y << "]: ";
-            for (Cell* cell : graph[x][y]) {
-                std::cout << "(" << cell->x << "," << cell->y << ")";
-            }
+            for (Vector2i cell : graph[x][y])
+                std::cout << "(" << cell.x << "," << cell.y << ")";
+
             std::cout << std::endl;
         }
-
 
     return graph;
 }
 
-Cell* Maze::getCell(Vector2 coord) {
-    int x = (coord.x - this->x) / CELL_SIZE;
-    int y = (coord.y - this->y) / CELL_SIZE;
+Cell& Maze::getCell(Vector2i cell) {
+    return matrix.at(cell.x).at(cell.y);
+}
+
+Vector2i Maze::getMouseCell() {
+    Vector2 mouse_pos = GetMousePosition();
+    int x = (mouse_pos.x - position.x) / CELL_SIZE;
+    int y = (mouse_pos.y - position.y) / CELL_SIZE;
 
     if (x >= 0 && x < COL_NUM && y >= 0 && y < LINE_NUM)
-        return &this->matrix[x][y];
+        return Vector2i{x, y};
 
-
-    return nullptr;
+    return {-1, -1};
 }
 
-bool Maze::isAcessible(Cell* cell, Cell* neighbor) {
-    if (neighbor->x == cell->x) {
-        if (neighbor->y == cell->y - 1) {
-            return !(cell->wall_up);
-        }
-        else if (neighbor->y == cell->y + 1) {
-            return !(cell->wall_down);
-        }
+bool isAccessible(Vector2i cell, Vector2i neighbor) {
+    if (abs(neighbor.x - cell.x) > 1 || abs(neighbor.x - cell.x) > 1)
+        return false;
+        
+        
+}
+
+bool Maze::isAccessible(Vector2i cell, Vector2i neighbor) {
+    std::cout << "Cell[" << cell.x << "][" << cell.y << "] -> Cell[" << neighbor.x << "][" << neighbor.y << "]" << std::endl;
+    if (neighbor.x > COL_NUM-1 || neighbor.y > LINE_NUM-1)
+        return false;
+
+    if (neighbor.x == cell.x) {
+        if (neighbor.y == cell.y - 1 && !(getCell(cell).wall_up))
+            return true;
+        else if (neighbor.y == cell.y + 1 && !(getCell(cell).wall_down))
+            return true;
     }
-    else if (neighbor->y == cell->y) {
-        if (neighbor->x == cell->x - 1) {
-            return !(cell->wall_left);
-        }
-        else if (neighbor->x == cell->x + 1) {
-            return !(cell->wall_right);
-        }
+
+    else if (neighbor.y == cell.y) {
+        if (neighbor.x == cell.x - 1 && !(getCell(cell).wall_left))
+            return true;
+        else if (neighbor.x == cell.x + 1 && !(getCell(cell).wall_right))
+            return true;
     }
+
+    std::cout
     return false;
+
 }
 
-
-bool Maze::isDeadEnd(Cell* cell) {
+bool Maze::isDeadEnd(Vector2i cell) {
     return getUnvisitedNeighbors(cell).empty();
 }
 
-Cell* Maze::getNeighbor(Cell* cell, Direction direction) {
+Vector2i Maze::getNeighbor(Vector2i cell, Direction direction) {
     switch (direction) {
         case up:
-            if (cell->y > 0)
-                return &(matrix[cell->x][cell->y-1]);
+            if (cell.y > 0)
+                return {cell.x, cell.y-1};
             break;
         case right:
-            if (cell->x < COL_NUM-1)
-                return &(matrix[cell->x+1][cell->y]);
+            if (cell.x < COL_NUM-1)
+                return {cell.x+1, cell.y};
             break;
         case down:
-            if (cell->y < LINE_NUM-1)
-                return &(matrix[cell->x][cell->y+1]);
+            if (cell.y < LINE_NUM-1)
+                return {cell.x, cell.y+1};
             break;
         case left:
-            if (cell->x > 0)
-                return &(matrix[cell->x-1][cell->y]);
+            if (cell.x > 0)
+                return {cell.x-1, cell.y};
             break;
     }
-    return nullptr;
+    return {-1, -1};
 }
 
-
-std::vector<Cell*> Maze::getNeighbors(Cell* cell){
-    std::vector<Cell*> neighbors;
+std::vector<Vector2i> Maze::getNeighbors(Vector2i cell){
+    std::vector<Vector2i> neighbors;
 
     for (Direction dir : {up, right, down, left}) {
-        Cell* neighbor = getNeighbor(cell, dir);
-        if (neighbor)
+        Vector2i neighbor = getNeighbor(cell, dir);
+        if (neighbor != Vector2i{-1, -1})
+            neighbors.push_back(neighbor);
+    }
+    return neighbors;
+}
+
+std::vector<Vector2i> Maze::getAccessibleNeighbors(Vector2i cell){
+    std::vector<Vector2i> neighbors;
+
+    for (Vector2i neighbor : getNeighbors(cell)) {
+        if (isAccessible(cell, neighbor))
             neighbors.push_back(neighbor);
     }
 
     return neighbors;
 }
 
-std::vector<Cell*> Maze::getAcessibleNeighbors(Cell* cell){
-    std::vector<Cell*> neighbors;
+std::vector<Vector2i> Maze::getUnvisitedNeighbors(Vector2i cell){
+    std::vector<Vector2i> neighbors;
 
-    for (Cell* neighbor : getNeighbors(cell)) {
-        if (isAcessible(cell, neighbor))
-            neighbors.push_back(neighbor);
-    }
-
-    return neighbors;
-};
-
-std::vector<Cell*> Maze::getUnvisitedNeighbors(Cell* cell){
-    std::vector<Cell*> neighbors;
-
-    for (Cell* neighbor : getNeighbors(cell)) {
-        if (neighbor->times_visited == 0)
+    for (Vector2i neighbor : getNeighbors(cell)) {
+        if (getCell(neighbor).times_visited == 0)
             neighbors.push_back(neighbor);
     }
 
     return neighbors;
 }
 
-std::vector<Cell*> Maze::getAcessibleUnvisitedNeighbors(Cell* cell){
-    std::vector<Cell*> neighbors;
+std::vector<Vector2i> Maze::getAccessibleUnvisitedNeighbors(Vector2i cell){
+    std::vector<Vector2i> neighbors;
 
-    for (Cell* neighbor : getNeighbors(cell)) {
-        if (neighbor->times_visited == 0 && isAcessible(cell, neighbor))
+    for (Vector2i& neighbor : getNeighbors(cell))
+        if (getCell(neighbor).times_visited == 0 && isAccessible(cell, neighbor))
             neighbors.push_back(neighbor);
-    }
 
     return neighbors;
 }
 
-Cell* Maze::getRandomNeighbor(std::vector<Cell*> potentialNeighbors){
+Vector2i Maze::getRandomNeighbor(std::vector<Vector2i> potentialNeighbors){
     if (potentialNeighbors.empty())
-        return nullptr;
-    return potentialNeighbors[rand_num(0, potentialNeighbors.size()-1)];
+        return {-1, -1};
+    return potentialNeighbors.at(rand_num(0, potentialNeighbors.size()-1));
 }
 
 void Maze::mazefyBinaryTree(){
@@ -209,38 +215,42 @@ void Maze::mazefyBinaryTree(){
     pathfinder->update();
 }
 
-void Maze::mazefyDepthFirstSearch(Cell* cell) {
-    this->reset();
-    std::stack<Cell*> stack;
-    cell->active = true;
-    cell->times_visited++;
+
+
+void Maze::mazefyDepthFirstSearch(Vector2i cell) {
+    if (cell == Vector2i{-1, -1})
+        return;
+
+    reset();
+    std::stack<Vector2i> stack;
+    getCell(cell).active = true;
+    getCell(cell).times_visited++;
     stack.push(cell);
 
     while (!stack.empty()) {
-        Cell* nextCell = getRandomNeighbor(getUnvisitedNeighbors(cell));
+        Vector2i nextCell = getRandomNeighbor(getUnvisitedNeighbors(cell));
 
-        if (nextCell) {
-
-            if (cell->x > nextCell->x) {
-                cell->wall_left = false;
-                nextCell->wall_right = false;
+        if (nextCell != Vector2i{-1, -1}) {
+            if (cell.x > nextCell.x) {
+                getCell(cell).wall_left = false;
+                getCell(nextCell).wall_right = false;
             }
-            else if (cell->x < nextCell->x) {
-                cell->wall_right = false;
-                nextCell->wall_left = false;
+            else if (cell.x < nextCell.x) {
+                getCell(cell).wall_right = false;
+                getCell(nextCell).wall_left = false;
             }
-            else if (cell->y > nextCell->y) {
-                cell->wall_up = false;
-                nextCell->wall_down = false;
+            else if (cell.y > nextCell.y) {
+                getCell(cell).wall_up = false;
+                getCell(nextCell).wall_down = false;
             }
-            else if (cell->y < nextCell->y) {
-                cell->wall_down = false;
-                nextCell->wall_up = false;
+            else if (cell.y < nextCell.y) {
+                getCell(cell).wall_down = false;
+                getCell(nextCell).wall_up = false;
             }
 
             cell = nextCell;
-            cell->times_visited++;
-            cell->active = true;
+            getCell(cell).times_visited++;
+            getCell(cell).active = true;
             stack.push(cell);
         }
 
@@ -261,9 +271,7 @@ void Maze::mazefyDepthFirstSearch(Cell* cell) {
 }
 
 void Maze::resetVisited(){
-    for (int x = 0; x < COL_NUM; x++){
-        for (int y = 0; y < LINE_NUM; y++){
-            this->matrix[x][y].times_visited = 0;
-        }
-    }
+    for (auto y : matrix)
+        for (auto x : y)
+            x.times_visited = 0;
 }
