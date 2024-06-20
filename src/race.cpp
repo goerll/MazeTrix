@@ -1,5 +1,4 @@
 #include "../include/race.h"
-#include <SFML/System/Vector2.hpp>
 #include <raylib.h>
 
 Race::Race() {
