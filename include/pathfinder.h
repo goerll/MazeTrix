@@ -1,9 +1,7 @@
 #pragma once
 
-#include <vector>
-#include "cell.h"
 #include "maze.h"
-#include "global.h"
+#include <vector>
 #include <algorithm>
 
 class Pathfinder{
@@ -15,13 +13,10 @@ public:
     Cell* position;
 
     // Constructor
-    Pathfinder(Maze* maze, int x, int y);
-
+    Pathfinder(Maze* maze);
 
     // Draw the pathfinder (path included)
     void draw();
-    // Draw pathfinder's path
-    void drawPath();
 
     // Verifies if pathfinder is in dead end
     bool isDeadEnd();
@@ -33,9 +28,7 @@ public:
     void update();
 
     // Depth first search
-    bool depthFirstSearch(Cell* start, Cell* end);
-    bool depthFirstSearch(Cell* end);
-    void depthFirstSearch();
+    void depthFirstSearch(Cell* end);
 
     // Breath first search
     void breadthFirstSearch(Cell* end);

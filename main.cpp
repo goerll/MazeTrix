@@ -1,6 +1,5 @@
-#include "include/global.h"
 #include <raylib.h>
-#include "include/maze.h"
+#include "include/global.h"
 #include "include/race.h"
 
 int main() {
@@ -9,8 +8,15 @@ int main() {
 
     Race race;
     while (!WindowShouldClose()) {
+        if (IsKeyPressed(KEY_R))
+            race.reset();
+
         if (IsKeyPressed(KEY_D))
             race.mazefyDepthFirst(GetMousePosition());
+
+        if (IsKeyPressed(KEY_B))
+            race.mazefyBinaryTree(GetMousePosition());
+
         BeginDrawing();
             ClearBackground(BG_COLOR);
             race.draw();

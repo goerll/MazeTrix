@@ -6,49 +6,56 @@
 #include <iostream>
 #include <stack>
 
+
+Maze::Maze() : x(0), y(0) {
+  for (int x = 0; x < COL_NUM; x++)
+        for (int y = 0; y < LINE_NUM; y++)
+            matrix[x][y] = Cell(x, y);
+}
+
 Maze::Maze(int x, int y) : x(x), y(y) {
-    for (int cell_x = 0; cell_x < COL_NUM; cell_x++){
-        for (int cell_y = 0; cell_y < LINE_NUM; cell_y++){
-            matrix[cell_x][cell_y] = Cell(this, cell_x, cell_y);
-        }
-    }
-    pathfinder = new Pathfinder(this, 0, 0);
+    for (int x = 0; x < COL_NUM; x++)
+      for (int y = 0; y < LINE_NUM; y++)
+          matrix[x][y] = Cell(x, y);
+
+    pathfinder = new Pathfinder(this);
+}
+
+Maze::Maze(Maze &maze) {
+    for (int x = 0; x < COL_NUM; x++)
+        for (int y = 0; y < LINE_NUM; y++)
+            matrix[x][y] = maze.matrix[x][y];
 }
 
 void Maze::draw(){
-    for (int x = 0; x < COL_NUM; x++){
-        for (int y = 0; y < LINE_NUM; y++){
-            if (this->matrix[x][y].active)
-                this->matrix[x][y].drawSquare();
-        }
-    }
+    for (int x = 0; x < COL_NUM; x++)
+        for (int y = 0; y < LINE_NUM; y++)
+            if (matrix[x][y].active)
+                matrix[x][y].drawSquare(this->x, this->y);
 
     pathfinder->draw();
 
-    for (int x = 0; x < COL_NUM; x++){
-        for (int y = 0; y < LINE_NUM; y++){
-            if (this->matrix[x][y].active)
-                this->matrix[x][y].drawWalls();
-        }
-    }
+    for (int x = 0; x < COL_NUM; x++)
+        for (int y = 0; y < LINE_NUM; y++)
+            if (matrix[x][y].active)
+                matrix[x][y].drawWalls(this->x, this->y);
+
+
 }
 
 void Maze::reset() {
-    for (int x = 0; x < LINE_NUM; ++x) {
-        for (int y = 0; y < COL_NUM; ++y) {
-            matrix[x][y] = Cell(this, x, y);
-        }
-    }
+    for (int x = 0; x < LINE_NUM; ++x)
+        for (int y = 0; y < COL_NUM; ++y)
+            matrix[x][y] = Cell(x, y);
 
     pathfinder->path.clear();
 }
 
 std::array<std::array<std::vector<Cell*>, LINE_NUM>, COL_NUM> Maze::toGraph() {
     std::array<std::array<std::vector<Cell*>, LINE_NUM>, COL_NUM> graph;
-
-    for (int y = 0; y < LINE_NUM; y++){
+    for (int y = 0; y < LINE_NUM; y++)
         for (int x = 0; x < COL_NUM; x++){
-            graph[x][y] = this->matrix[x][y].getAcessibleNeighbors();
+            graph[x][y] = getAcessibleNeighbors(&matrix[x][y]);
 
             // Print out the adjacency list generated
             std::cout << "Cell[" << x << "][" << y << "]: ";
@@ -57,17 +64,119 @@ std::array<std::array<std::vector<Cell*>, LINE_NUM>, COL_NUM> Maze::toGraph() {
             }
             std::cout << std::endl;
         }
-    }
+
 
     return graph;
 }
 
 Cell* Maze::getCell(Vector2 coord) {
-    int index_x = (coord.x - this->x)/CELL_SIZE;
-    int index_y = (coord.y - this->y)/CELL_SIZE;
+    int x = (coord.x - this->x) / CELL_SIZE;
+    int y = (coord.y - this->y) / CELL_SIZE;
 
-    std::cout << index_x << ", " << index_y << std::endl;
-    return &(this->matrix[index_x][index_y]);
+    if (x >= 0 && x < COL_NUM && y >= 0 && y < LINE_NUM)
+        return &this->matrix[x][y];
+
+
+    return nullptr;
+}
+
+bool Maze::isAcessible(Cell* cell, Cell* neighbor) {
+    if (neighbor->x == cell->x) {
+        if (neighbor->y == cell->y - 1) {
+            return !(cell->wall_up);
+        }
+        else if (neighbor->y == cell->y + 1) {
+            return !(cell->wall_down);
+        }
+    }
+    else if (neighbor->y == cell->y) {
+        if (neighbor->x == cell->x - 1) {
+            return !(cell->wall_left);
+        }
+        else if (neighbor->x == cell->x + 1) {
+            return !(cell->wall_right);
+        }
+    }
+    return false;
+}
+
+
+bool Maze::isDeadEnd(Cell* cell) {
+    return getUnvisitedNeighbors(cell).empty();
+}
+
+Cell* Maze::getNeighbor(Cell* cell, Direction direction) {
+    switch (direction) {
+        case up:
+            if (cell->y > 0)
+                return &(matrix[cell->x][cell->y-1]);
+            break;
+        case right:
+            if (cell->x < COL_NUM-1)
+                return &(matrix[cell->x+1][cell->y]);
+            break;
+        case down:
+            if (cell->y < LINE_NUM-1)
+                return &(matrix[cell->x][cell->y+1]);
+            break;
+        case left:
+            if (cell->x > 0)
+                return &(matrix[cell->x-1][cell->y]);
+            break;
+    }
+    return nullptr;
+}
+
+
+std::vector<Cell*> Maze::getNeighbors(Cell* cell){
+    std::vector<Cell*> neighbors;
+
+    for (Direction dir : {up, right, down, left}) {
+        Cell* neighbor = getNeighbor(cell, dir);
+        if (neighbor)
+            neighbors.push_back(neighbor);
+    }
+
+    return neighbors;
+}
+
+std::vector<Cell*> Maze::getAcessibleNeighbors(Cell* cell){
+    std::vector<Cell*> neighbors;
+
+    for (Cell* neighbor : getNeighbors(cell)) {
+        if (isAcessible(cell, neighbor))
+            neighbors.push_back(neighbor);
+    }
+
+    return neighbors;
+};
+
+std::vector<Cell*> Maze::getUnvisitedNeighbors(Cell* cell){
+    std::vector<Cell*> neighbors;
+
+    for (Cell* neighbor : getNeighbors(cell)) {
+        if (neighbor->times_visited == 0)
+            neighbors.push_back(neighbor);
+    }
+
+    return neighbors;
+}
+
+std::vector<Cell*> Maze::getAcessibleUnvisitedNeighbors(Cell* cell){
+    std::vector<Cell*> neighbors;
+
+    for (Cell* neighbor : getNeighbors(cell)) {
+        if (neighbor->times_visited == 0 && isAcessible(cell, neighbor))
+            neighbors.push_back(neighbor);
+    }
+
+    return neighbors;
+}
+
+Cell* Maze::getRandomNeighbor(std::vector<Cell*> potentialNeighbors){
+    if (potentialNeighbors.empty())
+        return nullptr;
+    return potentialNeighbors[rand_num(0, potentialNeighbors.size()-1)];
 }
 
 void Maze::mazefyBinaryTree(){
@@ -108,7 +217,7 @@ void Maze::mazefyDepthFirstSearch(Cell* cell) {
     stack.push(cell);
 
     while (!stack.empty()) {
-        Cell* nextCell = cell->getRandomNeighbor(cell->getUnvisitedNeighbors());
+        Cell* nextCell = getRandomNeighbor(getUnvisitedNeighbors(cell));
 
         if (nextCell) {
 
@@ -143,7 +252,7 @@ void Maze::mazefyDepthFirstSearch(Cell* cell) {
 
         BeginDrawing();
             ClearBackground(BG_COLOR);
-            this->draw();
+            draw();
         EndDrawing();
 
     }
@@ -158,4 +267,3 @@ void Maze::resetVisited(){
         }
     }
 }
-

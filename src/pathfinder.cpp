@@ -1,36 +1,21 @@
 #include "../include/pathfinder.h"
-/*#include <iostream>*/
-#include <stack>
 #include <queue>
 
-/*sf::RectangleShape PATHFINDER_SQUARE( { CELL_SIZE - (WALL_SIZE*2), CELL_SIZE - (WALL_SIZE*2) } );*/
-/*const int shrink = 10;*/
-/*sf::RectangleShape PATH_SQUARE( { CELL_SIZE - (WALL_SIZE*2) - shrink*2, CELL_SIZE - (WALL_SIZE*2) - shrink*2 } );*/
-/*sf::RectangleShape PATH_SQUARE( { CELL_SIZE, CELL_SIZE } );*/
-
-Pathfinder::Pathfinder(Maze* maze, int x = 0, int y = 0) : maze(maze), map(maze->toGraph()) {
-    position = &maze->matrix[x][y];
-    maze->pathfinder = this;
-}
-
-void Pathfinder::draw () {
-    drawPath();
-
-    int x = (this->position->x * CELL_SIZE) + this->maze->x;
-    int y = (this->position->y * CELL_SIZE) + this->maze->y;
-
-    DrawRectangle(x + WALL_SIZE, y + WALL_SIZE, CELL_SIZE - (WALL_SIZE*2), CELL_SIZE - (WALL_SIZE*2), PATHFINDER_COLOR);
+Pathfinder::Pathfinder(Maze* maze) : maze(maze), map(maze->toGraph()) {
+    position = &maze->matrix[0][0];
 }
 
 Color interpolateColor(Color a, Color b, float t) {
-    Color color;
-    color.r = (a.r + (b.r - a.r) * t);
-    color.g = (a.g + (b.g - a.g) * t);
-    color.b = (a.b + (b.b - a.b) * t);
-    return color;
-};
+    return {
+        (unsigned char)(a.r + (b.r - a.r) * t),
+        (unsigned char)(a.g + (b.g - a.g) * t),
+        (unsigned char)(a.b + (b.b - a.b) * t),
+        (unsigned char)(a.a + (b.a - a.a) * t)
+    };
+}
 
-void Pathfinder::drawPath() {
+void Pathfinder::draw () {
+    // Draw path
     Color color;
     Color start = MAGENTA;
 
@@ -41,10 +26,16 @@ void Pathfinder::drawPath() {
         int x = (cell->x * CELL_SIZE) + this->maze->x;
         int y = (cell->y * CELL_SIZE) + this->maze->y;
 
-        color = interpolateColor(start, PATHFINDER_COLOR, (float)i/(float)path.size());
+        color = interpolateColor(start, PATHFINDER_COLOR, i/(float)path.size());
 
         DrawRectangle(x + WALL_SIZE, y + WALL_SIZE, CELL_SIZE, CELL_SIZE, color);
     }
+
+    // Draw pathfinder
+    int x = (this->position->x * CELL_SIZE) + this->maze->x;
+    int y = (this->position->y * CELL_SIZE) + this->maze->y;
+
+    DrawRectangle(x + WALL_SIZE, y + WALL_SIZE, CELL_SIZE - (WALL_SIZE*2), CELL_SIZE - (WALL_SIZE*2), PATHFINDER_COLOR);
 }
 
 void Pathfinder::setPosition(Cell* cell) {
@@ -53,7 +44,7 @@ void Pathfinder::setPosition(Cell* cell) {
 }
 
 bool Pathfinder::isDeadEnd(){
-    return position->isDeadEnd();
+    return maze->isDeadEnd(position);
 }
 
 Cell* Pathfinder::getWay() {
@@ -65,14 +56,12 @@ Cell* Pathfinder::getWay() {
     return nullptr;
 }
 
-bool Pathfinder::depthFirstSearch(Cell* end) {
+void Pathfinder::depthFirstSearch(Cell* end) {
     path.clear();
     maze->resetVisited();
-    std::stack<Cell*> stack;
-    stack.push(position);
     path.push_back(position);
 
-    while (!stack.empty()) {
+    while (!path.empty()) {
         if (position == end)
             break;
 
@@ -81,14 +70,12 @@ bool Pathfinder::depthFirstSearch(Cell* end) {
         if (nextCell != nullptr) {
             position = nextCell;
             position->times_visited++;
-            stack.push(position);
             path.push_back(position);
         }
         else {
-            stack.pop();
             path.pop_back();
-            if (!stack.empty())
-                position = stack.top();
+            if (!path.empty())
+                position = path.back();
         }
 
         BeginDrawing();
@@ -96,16 +83,6 @@ bool Pathfinder::depthFirstSearch(Cell* end) {
             maze->draw();
         EndDrawing();
     }
-
-    if (position == end) {
-        /*while (!stack.empty()) {*/
-        /*    path.push_back(stack.top());*/
-        /*    stack.pop();*/
-        /*}*/
-        /*std::reverse(path.begin(), path.end());*/
-        return true;
-    }
-    return false;
 }
 
 void Pathfinder::breadthFirstSearch(Cell* end) {
@@ -139,7 +116,7 @@ void Pathfinder::breadthFirstSearch(Cell* end) {
             break;
         }
 
-        std::vector<Cell*> neighbors = node->getAcessibleUnvisitedNeighbors();
+        std::vector<Cell*> neighbors = maze->getAcessibleUnvisitedNeighbors(node);
         for (Cell* next : neighbors) {
             queue.push(next);
             path.push_back(next);
