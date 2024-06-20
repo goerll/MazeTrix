@@ -1,19 +1,19 @@
 #include "../include/race.h"
 #include <raylib.h>
 
-Race::Race() {
-    mazeGrid.push_back(Maze({0, 0}));
-    mazeGrid.push_back(Maze({CELL_SIZE * LINE_NUM, 0}));
+Race::Race() : mazeGrid(2) {
+    mazeGrid[0] = std::make_unique<Maze>(Vector2i{0, 0});
+    mazeGrid[1] = std::make_unique<Maze>(Vector2i{CELL_SIZE * LINE_NUM, 0});
 }
 
 void Race::draw(){
-    for (Maze& maze : mazeGrid)
-        maze.draw();
+    for (auto& maze : mazeGrid)
+        maze->draw();
 }
 
 void Race::reset(){
-    for (Maze& maze : mazeGrid)
-        maze.reset();
+    for (auto& maze : mazeGrid)
+        maze->reset();
 }
 
 Maze* Race::getMaze() {
@@ -22,9 +22,9 @@ Maze* Race::getMaze() {
         return nullptr;
 
     if (coord.x < CELL_SIZE * COL_NUM && coord.y < CELL_SIZE * LINE_NUM)
-        return &mazeGrid[0];
+        return mazeGrid[0].get();
 
-    return &mazeGrid[1];
+    return mazeGrid[1].get();
 }
 
 void Race::mazefyDepthFirst(){
@@ -35,9 +35,9 @@ void Race::mazefyDepthFirst(){
 
     chosenMaze->mazefyDepthFirstSearch(chosenMaze->getMouseCell());
 
-    for (Maze& maze : mazeGrid) {
-        if (&maze != chosenMaze) {
-            maze.copyMatrix(*chosenMaze);
+    for (auto& maze : mazeGrid) {
+        if (maze.get() != chosenMaze) {
+            maze->copyMatrix(*chosenMaze);
         }
     }
 }
@@ -50,9 +50,9 @@ void Race::mazefyBinaryTree(){
 
     chosenMaze->mazefyBinaryTree();
 
-    for (Maze& maze : mazeGrid) {
-        if (&maze != chosenMaze) {
-            maze.copyMatrix(*chosenMaze);
+    for (auto& maze : mazeGrid) {
+        if (maze.get() != chosenMaze) {
+            maze->copyMatrix(*chosenMaze);
         }
     }
 }
