@@ -38,19 +38,16 @@ make
 
 ## Project Structure
 ```mermaid
-%%{init: {'theme': 'neutral' } }%%
+%%{init: {'theme': 'dark' } }%%
 classDiagram
     class Maze {
-        // Private members
         Vector2i position
         std::vector<std::vector<Cell>> matrix
         std::unique_ptr<Pathfinder> pathfinder
 
-        // Public constructors
         Maze()
         Maze(Vector2i pos)
 
-        // Public methods
         std::vector<std::vector<std::vector<Vector2i>>> toGraph()
         void draw()
         void copyMatrix(const Maze& maze)
@@ -74,7 +71,6 @@ classDiagram
     }
 
     class Cell {
-        // Private members
         Vector2i position
         bool active
         bool wall_up
@@ -83,11 +79,9 @@ classDiagram
         bool wall_right
         int times_visited
 
-        // Public constructors
         Cell()
         Cell(Vector2i position)
 
-        // Public methods
         void draw(Vector2i offset)
         void drawWalls(Vector2i offset)
         void drawSquare(Vector2i offset)
@@ -102,16 +96,13 @@ classDiagram
     }
 
     class Pathfinder {
-        // Private members
         Maze* maze
         Vector2i position
         std::vector<Vector2i> path
         std::vector<std::vector<std::vector<Vector2i>>> map
 
-        // Public constructors
         Pathfinder(Maze* maze)
 
-        // Public methods
         void draw()
         bool isDeadEnd()
         Vector2i getWay()
@@ -130,13 +121,10 @@ classDiagram
     }
 
     class Race {
-        // Private members
         std::vector<Maze*> mazeGrid
 
-        // Public constructors
         Race()
 
-        // Public methods
         void draw()
         void reset()
         Maze* getMaze()
