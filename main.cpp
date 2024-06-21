@@ -17,6 +17,14 @@ int main() {
         if (IsKeyPressed(KEY_B))
             race.mazefyBinaryTree();
 
+        if (IsKeyDown(KEY_P))
+            race.setPathfinderPosition();
+
+        if (IsKeyPressed(KEY_O)) {
+            SetTargetFPS(10);
+            race.findWay();
+        }
+
         BeginDrawing();
             ClearBackground(BG_COLOR);
             race.draw();

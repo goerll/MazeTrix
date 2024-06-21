@@ -4,7 +4,7 @@
 #include "../include/global.h"
 #include <algorithm>
 
-Pathfinder::Pathfinder(Maze* maze) : map(maze->toGraph()), maze(maze), position({0,0}) {};
+Pathfinder::Pathfinder(Maze* maze) : maze(maze), position({0,0}), map(maze->toGraph()) {};
 
 Color interpolateColor(Color a, Color b, float t) {
     return {
@@ -17,24 +17,24 @@ Color interpolateColor(Color a, Color b, float t) {
 
 void Pathfinder::draw () {
     // Draw path
-    Color color;
     Color start = MAGENTA;
 
     int i = 0;
 
-    for (Vector2i cell : path) {
+    for (auto& cell : path) {
         i++;
-        int x = (cell.x * CELL_SIZE) + this->maze->position.x;
-        int y = (cell.y * CELL_SIZE) + this->maze->position.y;
 
-        color = interpolateColor(start, PATHFINDER_COLOR, i/(float)path.size());
+        int x = (cell.x * CELL_SIZE) + maze->getPosition().x;
+        int y = (cell.y * CELL_SIZE) + maze->getPosition().y;
+
+        Color color = interpolateColor(start, PATHFINDER_COLOR, i/(float)path.size());
 
         DrawRectangle(x + WALL_SIZE, y + WALL_SIZE, CELL_SIZE, CELL_SIZE, color);
     }
 
     // Draw pathfinder
-    int x = (this->position.x * CELL_SIZE) + this->maze->position.x;
-    int y = (this->position.y * CELL_SIZE) + this->maze->position.y;
+    int x = (this->position.x * CELL_SIZE) + this->maze->getPosition().x;
+    int y = (this->position.y * CELL_SIZE) + this->maze->getPosition().y;
 
     DrawRectangle(x + WALL_SIZE, y + WALL_SIZE, CELL_SIZE - (WALL_SIZE*2), CELL_SIZE - (WALL_SIZE*2), PATHFINDER_COLOR);
 }
@@ -54,10 +54,11 @@ Vector2i Pathfinder::getWay() {
     }
 
     for (size_t i = 0; i < map[position.x][position.y].size(); i++) {
-        if (maze->getCell(map[position.x][position.y][i]).times_visited == 0) {
+        if (maze->getCell(map[position.x][position.y][i]).getTimesVisited() == 0) {
             return map[position.x][position.y][i];
         }
     }
+
     return {-1, -1};
 }
 
@@ -76,8 +77,7 @@ void Pathfinder::depthFirstSearch(Vector2i end) {
 
         if (nextCell != Vector2i{-1, -1}) {
             position = nextCell;
-            maze->getCell(position).times_visited++;
-            // position->times_visited++;
+            maze->getCell(position).increaseTimesVisited();
             path.push_back(position);
         }
         else {
@@ -106,7 +106,7 @@ void Pathfinder::breadthFirstSearch(Vector2i end) {
 
     queue.push(position);
     path.push_back(position);
-    maze->getCell(position).times_visited++;
+    maze->getCell(position).increaseTimesVisited();
 
     vector<vector<Vector2i>> previous(COL_NUM, vector<Vector2i>(LINE_NUM, {-1, -1}));
 
@@ -129,7 +129,7 @@ void Pathfinder::breadthFirstSearch(Vector2i end) {
         for (Vector2i next : neighbors) {
             queue.push(next);
             path.push_back(next);
-            maze->getCell(next).times_visited++;
+            maze->getCell(next).increaseTimesVisited();
             previous[next.x][next.y] = node;
         }
     }
@@ -147,4 +147,28 @@ void Pathfinder::breadthFirstSearch(Vector2i end) {
 void Pathfinder::update() {
     path.clear();
     map = maze->toGraph();
+}
+
+void Pathfinder::clearPath() {
+    path.clear();
+}
+
+Vector2i Pathfinder::getPosition() {
+    return position;
+}
+
+Vector2i Pathfinder::getPathTop() {
+    return path.front();
+}
+
+void Pathfinder::pathPush(Vector2i cell) {
+    path.push_back(cell);
+}
+
+void Pathfinder::pathPop() {
+    path.pop_back();
+}
+
+bool Pathfinder::isPathEmpty() {
+    return path.empty();
 }

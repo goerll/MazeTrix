@@ -1,5 +1,6 @@
 #pragma once
 
+// Vector2i structure for 2D coordinates
 struct Vector2i {
   int x, y;
 
