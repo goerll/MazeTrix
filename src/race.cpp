@@ -75,7 +75,7 @@ void Race::setPathfinderPosition(){
     }
 }
 
-// Make pathfinder find it's way to cell at mouse (depth first for left maze, binary tree for right maze)
+// Make pathfinder find it's way to cell at mouse (depth first for left maze, breadth first for right maze)
 void Race::findWay() {
     // Get maze at mouse position
     Maze* chosenMaze = getMaze();
