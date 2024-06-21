@@ -1,22 +1,171 @@
-# MazeTrix
+# MazeTrix: a graph traversal algorithm visualizer (with mazes)
 https://github.com/goerll/MazeTrix/assets/90577512/56ea8d75-a5d1-4347-b075-9a6870f338ce
 
-# Logic behind the implementation
-Cells are objects that have booleans to describe their individual state: which walls are supposed to be displayed, if it's supposed to be highlighted and if it is currently active. The class has a member function that draws the cell considering it's state.
+## Index
+- [Introduction](#introduction)
+- [Features](#features)
+- [Usage](#description)
+- [Project Structure](#project-structure)
+- [Algorithms Used](#algorithms-used)
+- [Acknowledgements](#acknowledgements)
 
-The size of the cells, number of them and their color can all be changed with the global variables.
+## Introduction
+The goal of this project is to provide a  **cool looking**, real-time visualization of maze generation algorithms and a visual comparison of graph traversal algorithms while allowing the user to control the whole thing.
 
-Mazes have a matrix, that is an array, of arrays, of Cells, where the outmost array contains the lines, and the subarrays contain the elements of each line (which are Cells). The Maze class has various member functions that are important for the implementation of the maze generating algorithms. The functions that generate the mazes also display them on screen (providing interesting visualizations of how each algorithm works).
+## Features
+### Maze Grid
+The program displays a grid consisting of two mazes that mirror each other, if you mazefy one of them, the maze is copied to the other one too.
 
-# What currently works
-- Drawing a matrix with any number of lines, on any screen size
-- Binary tree maze generation algorithm
-- Depth-first search maze generation algorithm
+### Pathfinders
+Each maze has a pathfinder and they also mimick each other, but the pathfinder on the left maze will always find it's way to other positions through the depth first search algorithm, and the one on the right will always use breadth first search, let's see who get's there faster!
 
-# Keybinds
-- A - activate cell at mouse position
-- S - deactivate cell at mouse position
-- D - use depth-first search algorithm (starts at the cell at mouse position)
-- B - use binary tree algorithm
-- R - clear maze;
-- H - highlight cell at mouse position (currently broken)
+## Usage
+### Compiling and Running
+``` bash
+# Compile
+Cmake .
+make
+# Run
+./bin/MazeTrix
+```
+### Keybinds
+| Key | Alt | Function |
+| - | - | - |
+| <kbd>D</kbd> | - | Generates maze with depth first search starting on the cell at mouse |
+| <kbd>B</kbd> | - | Generates maze using the binary tree algorithm on the maze at mouse |
+| <kbd>P</kbd> | <kbd>LMB</kbd> | Place pathfinders at cell at mouse |
+| <kbd>O</kbd> | <kbd>RMB</kbd> | Make pathfinders find their way to where the mouse is |
+
+## Project Structure
+```mermaid
+%%{init: {'theme': 'neutral' } }%%
+classDiagram
+    class Maze {
+        // Private members
+        Vector2i position
+        std::vector<std::vector<Cell>> matrix
+        std::unique_ptr<Pathfinder> pathfinder
+
+        // Public constructors
+        Maze()
+        Maze(Vector2i pos)
+
+        // Public methods
+        std::vector<std::vector<std::vector<Vector2i>>> toGraph()
+        void draw()
+        void copyMatrix(const Maze& maze)
+        void reset()
+        void resetVisited()
+        Vector2i getMouseCell()
+        Cell& getCell(Vector2i cell)
+        bool isAccessible(Vector2i cell, Vector2i neighbor)
+        bool isDeadEnd(Vector2i cell)
+        Vector2i getNeighbor(Vector2i cell, Direction direction)
+        std::vector<Vector2i> getNeighbors(Vector2i cell)
+        std::vector<Vector2i> getAccessibleNeighbors(Vector2i cell)
+        std::vector<Vector2i> getUnvisitedNeighbors(Vector2i cell)
+        std::vector<Vector2i> getAccessibleUnvisitedNeighbors(Vector2i cell)
+        Vector2i getRandomNeighbor(std::vector<Vector2i> potentialNeighbors)
+        void mazefyBinaryTree()
+        void mazefyDepthFirstSearch(Vector2i startCell)
+        Vector2i getPosition()
+        std::vector<std::vector<Cell>>& getMatrix()
+        std::unique_ptr<Pathfinder>& getPathfinder()
+    }
+
+    class Cell {
+        // Private members
+        Vector2i position
+        bool active
+        bool wall_up
+        bool wall_down
+        bool wall_left
+        bool wall_right
+        int times_visited
+
+        // Public constructors
+        Cell()
+        Cell(Vector2i position)
+
+        // Public methods
+        void draw(Vector2i offset)
+        void drawWalls(Vector2i offset)
+        void drawSquare(Vector2i offset)
+        Vector2i getPosition()
+        bool getWall(Direction direction)
+        bool getActive()
+        int getTimesVisited()
+        void setActive(bool state)
+        void setWall(Direction direction, bool state)
+        void increaseTimesVisited()
+        void resetTimesVisited()
+    }
+
+    class Pathfinder {
+        // Private members
+        Maze* maze
+        Vector2i position
+        std::vector<Vector2i> path
+        std::vector<std::vector<std::vector<Vector2i>>> map
+
+        // Public constructors
+        Pathfinder(Maze* maze)
+
+        // Public methods
+        void draw()
+        bool isDeadEnd()
+        Vector2i getWay()
+        void setPosition(Vector2i cell)
+        void update()
+        void clearPath()
+        void pathPush(Vector2i cell)
+        void pathPop()
+        void reversePath()
+        void depthFirstSearch(Vector2i end)
+        void breadthFirstSearch(Vector2i end)
+        Vector2i getPosition()
+        Vector2i getPathTop()
+        std::vector<Vector2i> getPath()
+        bool isPathEmpty()
+    }
+
+    class Race {
+        // Private members
+        std::vector<Maze*> mazeGrid
+
+        // Public constructors
+        Race()
+
+        // Public methods
+        void draw()
+        void reset()
+        Maze* getMaze()
+        void mazefyDepthFirst()
+        void mazefyBinaryTree()
+        void setPathfinderPosition()
+        void findWay()
+    }
+
+    class Vector2i {
+        int x
+        int y
+
+        bool operator==(const Vector2i &) const
+        bool operator!=(const Vector2i &) const
+    }
+```
+
+### 
+
+
+## Algorithms Used
+### Generation
+- Depth First Search
+- Binary Tree
+### Solving
+These use an adjacency list that represents the maze in the form of a graph.
+- Depth First Search
+- Breadth First Search
+
+## Acknowledgements
+This project was created for my Object Oriented Programming II class on my third semester in college. Special thanks to [SamVeras](www.github.com/SamVeras) for suggesting raylib and helping me immensely with final stage debugging and to [JotaEspig](www.github.com/JotaEspig) for setting up the Cmake for the project.
