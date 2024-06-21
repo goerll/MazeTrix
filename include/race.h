@@ -5,7 +5,7 @@
 
 class Race {
     private:
-        std::vector<std::unique_ptr<Maze>> mazeGrid;
+        std::vector<Maze*> mazeGrid;
 
     public:
         Race();

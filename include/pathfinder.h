@@ -9,7 +9,6 @@ class Pathfinder{
         Maze* maze;
         // Position in the maze
         Vector2i position;
-
         // Pathfinder position history
         std::vector<Vector2i> path;
         // Graph map
@@ -37,6 +36,8 @@ class Pathfinder{
         // Pop from path
         void pathPop();
 
+        void reversePath();
+
         // Use depth first search to find path to end
         void depthFirstSearch(Vector2i end);
         // Use breath first search to find path to end
@@ -45,5 +46,6 @@ class Pathfinder{
         // Getters
         Vector2i getPosition();
         Vector2i getPathTop();
+        std::vector<Vector2i> getPath();
         bool isPathEmpty();
 };

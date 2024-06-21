@@ -13,7 +13,7 @@ Maze::Maze() : Maze(Vector2i{0, 0}) {}
 
 Maze::Maze(Vector2i pos) : position(pos),
                            matrix(COL_NUM, std::vector<Cell>(LINE_NUM)),
-                           pathfinder(std::make_unique<Pathfinder>(this)) {
+                           pathfinder(new Pathfinder(this)) {
 
     // Initialize the matrix's cells
     for (size_t x = 0; x < matrix.size(); x++)

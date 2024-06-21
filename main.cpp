@@ -7,6 +7,7 @@ int main() {
     SetTargetFPS(120);
 
     Race race;
+
     while (!WindowShouldClose()) {
         if (IsKeyPressed(KEY_R))
             race.reset();
@@ -21,7 +22,6 @@ int main() {
             race.setPathfinderPosition();
 
         if (IsKeyPressed(KEY_O)) {
-            SetTargetFPS(10);
             race.findWay();
         }
 

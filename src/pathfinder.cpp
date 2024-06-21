@@ -3,8 +3,9 @@
 #include "../include/maze.h"
 #include "../include/global.h"
 #include <algorithm>
+#include <iostream>
 
-Pathfinder::Pathfinder(Maze* maze) : maze(maze), position({0,0}), map(maze->toGraph()) {};
+Pathfinder::Pathfinder(Maze* maze) : maze(maze), position({0,0}), path(), map(maze->toGraph()) {};
 
 Color interpolateColor(Color a, Color b, float t) {
     return {
@@ -17,7 +18,7 @@ Color interpolateColor(Color a, Color b, float t) {
 
 void Pathfinder::draw () {
     // Draw path
-    Color start = MAGENTA;
+    Color start = RED;
 
     int i = 0;
 
@@ -41,7 +42,6 @@ void Pathfinder::draw () {
 
 void Pathfinder::setPosition(Vector2i cell) {
     position = cell;
-    path.clear();
 }
 
 bool Pathfinder::isDeadEnd(){
@@ -157,8 +157,16 @@ Vector2i Pathfinder::getPosition() {
     return position;
 }
 
+std::vector<Vector2i> Pathfinder::getPath() {
+    return path;
+}
+
 Vector2i Pathfinder::getPathTop() {
-    return path.front();
+    if (path.empty()) {
+        std::cerr << "Error: Attempted to get top of empty path." << std::endl;
+        return Vector2i{-1, -1};
+    }
+    return path.back();
 }
 
 void Pathfinder::pathPush(Vector2i cell) {
@@ -166,9 +174,17 @@ void Pathfinder::pathPush(Vector2i cell) {
 }
 
 void Pathfinder::pathPop() {
-    path.pop_back();
+    if (!path.empty()) {
+        path.pop_back();
+    } else {
+        std::cerr << "Warning: Attempted to pop from empty path." << std::endl;
+    }
 }
 
 bool Pathfinder::isPathEmpty() {
     return path.empty();
+}
+
+void Pathfinder::reversePath() {
+    std::reverse(path.begin(), path.end());
 }

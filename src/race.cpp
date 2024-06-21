@@ -1,9 +1,13 @@
 #include "../include/race.h"
+#include <algorithm>
 #include <raylib.h>
+#include <iostream>
+#include <queue>
+#include <array>
 
 Race::Race() : mazeGrid(2) {
-    mazeGrid[0] = std::make_unique<Maze>(Vector2i{0, 0});
-    mazeGrid[1] = std::make_unique<Maze>(Vector2i{CELL_SIZE * LINE_NUM, 0});
+    mazeGrid[0] = new Maze(Vector2i{0, 0});
+    mazeGrid[1] = new Maze(Vector2i{CELL_SIZE * LINE_NUM, 0});
 }
 
 void Race::draw(){
@@ -22,9 +26,9 @@ Maze* Race::getMaze() {
         return nullptr;
 
     if (coord.x < CELL_SIZE * COL_NUM && coord.y < CELL_SIZE * LINE_NUM)
-        return mazeGrid[0].get();
+        return mazeGrid[0];
 
-    return mazeGrid[1].get();
+    return mazeGrid[1];
 }
 
 void Race::mazefyDepthFirst(){
@@ -36,7 +40,7 @@ void Race::mazefyDepthFirst(){
     chosenMaze->mazefyDepthFirstSearch(chosenMaze->getMouseCell());
 
     for (auto& maze : mazeGrid) {
-        if (maze.get() != chosenMaze) {
+        if (maze != chosenMaze) {
             maze->copyMatrix(*chosenMaze);
         }
     }
@@ -51,7 +55,7 @@ void Race::mazefyBinaryTree(){
     chosenMaze->mazefyBinaryTree();
 
     for (auto& maze : mazeGrid) {
-        if (maze.get() != chosenMaze) {
+        if (maze != chosenMaze) {
             maze->copyMatrix(*chosenMaze);
         }
     }
@@ -69,9 +73,8 @@ void Race::setPathfinderPosition(){
     chosenMaze->getPathfinder()->setPosition(chosenMaze->getMouseCell());
 
     for (auto &maze : mazeGrid) {
-        if (maze.get() != chosenMaze) {
-            maze->getPathfinder()->setPosition(chosenMaze->getPathfinder()->getPosition());
-        }
+        maze->getPathfinder()->setPosition(chosenMaze->getPathfinder()->getPosition());
+        maze->getPathfinder()->clearPath();
     }
 }
 
@@ -103,7 +106,17 @@ void Race::findWay() {
 
     // Initialize previous list, previous[x][y] contains the cell that was accessed before cell [x][y]
     using std::vector;
-    vector<vector<Vector2i>> previous(COL_NUM, vector<Vector2i>(LINE_NUM, {-1, -1}));
+    std::queue<Vector2i> queue;
+    queue.push(breadthPathfinder->getPosition());
+
+    Vector2i start = breadthPathfinder->getPosition();
+    std::array<std::array<Vector2i, LINE_NUM>, COL_NUM> previous;
+    for (int i = 0; i < LINE_NUM; i++) {
+        for (int j = 0; j < COL_NUM; j++) {
+            previous[i][j] = Vector2i{-1,-1};
+        }
+    }
+
 
     // While pathfinders aren't both at the end
     while (depthPathfinder->getPosition() != end || breadthPathfinder->getPosition() != end) {
@@ -122,10 +135,15 @@ void Race::findWay() {
                 depthPathfinder->pathPush(nextCell);
             }
             else {
+                for (auto &cell : depthPathfinder->getPath()) {
+                    std::cout << cell.x << ", " << cell.y << std::endl;
+                }
                 // If there's no next step, remove the last step from the path
                 depthPathfinder->pathPop();
                 // If the path isn't empty
                 if (!depthPathfinder->isPathEmpty()) {
+                    std::cout << "depth" << std::endl;
+                    // Return the pathfinder to the last step
                     depthPathfinder->setPosition(depthPathfinder->getPathTop());
                 }
             }
@@ -133,7 +151,21 @@ void Race::findWay() {
 
         // If breadth pathfinder isn't at the end, take one step
         if (breadthPathfinder->getPosition() != end) {
-            breadthPathfinder->setPosition(end);
+            Vector2i nextCell = queue.front();
+            queue.pop();
+
+            breadthPathfinder->setPosition(nextCell);
+
+            /*if (nextCell == end)*/
+            /*    break;*/
+
+            vector<Vector2i> neighbors = mazeGrid[1]->getAccessibleUnvisitedNeighbors(nextCell);
+            for (Vector2i next : neighbors) {
+                queue.push(next);
+                breadthPathfinder->pathPush(next);
+                mazeGrid[1]->getCell(next).increaseTimesVisited();
+                previous[next.x][next.y] = nextCell;
+            }
         }
 
         BeginDrawing();
@@ -141,5 +173,13 @@ void Race::findWay() {
             draw();
         EndDrawing();
     }
+
+    breadthPathfinder->clearPath();
+    for (Vector2i at = end; at != start; at = previous[at.x][at.y]) {
+        breadthPathfinder->pathPush(at);
+    }
+    breadthPathfinder->reversePath();
+    breadthPathfinder->setPosition(end);
 }
+
 
