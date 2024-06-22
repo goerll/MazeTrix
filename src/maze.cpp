@@ -22,6 +22,13 @@ Maze::Maze(Vector2i pos) : position(pos),
 }
 
 void Maze::draw(){
+    // Draw a box around where the maze is
+    // Draw upper bound
+    DrawRectangle(position.x, position.y, COL_NUM*CELL_SIZE, WALL_SIZE, WALL_COLOR);
+    // Draw lower bound
+    DrawRectangle(position.x, position.y-WALL_SIZE+LINE_NUM*CELL_SIZE, COL_NUM*CELL_SIZE, WALL_SIZE, WALL_COLOR);
+    DrawRectangle(position.x, position.y, WALL_SIZE, COL_NUM*CELL_SIZE, WALL_COLOR);
+    DrawRectangle(position.x-WALL_SIZE+LINE_NUM*CELL_SIZE, position.y, WALL_SIZE, COL_NUM*CELL_SIZE, WALL_COLOR);
     // Draw all cell squares
     for (int x = 0; x < COL_NUM; x++)
         for (int y = 0; y < LINE_NUM; y++)

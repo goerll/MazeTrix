@@ -1,5 +1,4 @@
 #include "../include/race.h"
-#include <algorithm>
 #include <raylib.h>
 #include <iostream>
 #include <queue>
@@ -32,6 +31,7 @@ Maze* Race::getMaze() {
 }
 
 void Race::mazefyDepthFirst(){
+    reset();
     Maze* chosenMaze = getMaze();
 
     if (chosenMaze == nullptr)
@@ -47,6 +47,7 @@ void Race::mazefyDepthFirst(){
 }
 
 void Race::mazefyBinaryTree(){
+    reset();
     Maze* chosenMaze = getMaze();
 
     if (chosenMaze == nullptr)
@@ -102,6 +103,7 @@ void Race::findWay() {
 
     // Add their current position to their path
     depthPathfinder->pathPush(depthPathfinder->getPosition());
+    mazeGrid[0]->getCell(depthPathfinder->getPosition()).increaseTimesVisited();
     breadthPathfinder->pathPush(breadthPathfinder->getPosition());
 
     // Initialize previous list, previous[x][y] contains the cell that was accessed before cell [x][y]
@@ -156,15 +158,22 @@ void Race::findWay() {
 
             breadthPathfinder->setPosition(nextCell);
 
-            /*if (nextCell == end)*/
-            /*    break;*/
-
             vector<Vector2i> neighbors = mazeGrid[1]->getAccessibleUnvisitedNeighbors(nextCell);
             for (Vector2i next : neighbors) {
                 queue.push(next);
                 breadthPathfinder->pathPush(next);
                 mazeGrid[1]->getCell(next).increaseTimesVisited();
                 previous[next.x][next.y] = nextCell;
+            }
+
+            if (breadthPathfinder->getPosition() == end) {
+                breadthPathfinder->clearPath();
+                for (Vector2i at = end; at != start; at = previous[at.x][at.y]) {
+                    breadthPathfinder->pathPush(at);
+                }
+                breadthPathfinder->pathPush(start);
+                breadthPathfinder->reversePath();
+                breadthPathfinder->setPosition(end);
             }
         }
 
@@ -174,12 +183,6 @@ void Race::findWay() {
         EndDrawing();
     }
 
-    breadthPathfinder->clearPath();
-    for (Vector2i at = end; at != start; at = previous[at.x][at.y]) {
-        breadthPathfinder->pathPush(at);
-    }
-    breadthPathfinder->reversePath();
-    breadthPathfinder->setPosition(end);
 }
 
 

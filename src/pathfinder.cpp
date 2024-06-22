@@ -18,7 +18,7 @@ Color interpolateColor(Color a, Color b, float t) {
 
 void Pathfinder::draw () {
     // Draw path
-    Color start = RED;
+    Color start({240, 4, 245, 255});
 
     int i = 0;
 
