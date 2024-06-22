@@ -154,4 +154,4 @@ These use an adjacency list that represents the maze in the form of a graph.
 - Breadth First Search
 
 ## Acknowledgements
-This project was created for my Object Oriented Programming II class on my third semester in college. Special thanks to [SamVeras](www.github.com/SamVeras) for suggesting raylib and helping me immensely with final stage debugging and to [JotaEspig](www.github.com/JotaEspig) for setting up the Cmake for the project.
+This project was created for my Object Oriented Programming II class on my third semester in college. Special thanks to [SamVeras](https://www.github.com/SamVeras) for suggesting raylib and helping me immensely with final stage debugging and to [JotaEspig](https://www.github.com/JotaEspig) for setting up the Cmake for the project.
