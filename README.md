@@ -1,5 +1,9 @@
 # MazeTrix: a graph traversal algorithm visualizer (with mazes)
-https://github.com/goerll/MazeTrix/assets/90577512/56ea8d75-a5d1-4347-b075-9a6870f338ce
+
+
+https://github.com/goerll/MazeTrix/assets/90577512/0c1f6a26-a45d-4d77-a9eb-2fb9dc103ff4
+
+
 
 ## Index
 - [Introduction](#introduction)
@@ -15,9 +19,11 @@ The goal of this project is to provide a  **cool looking**, real-time visualizat
 ## Features
 ### Maze Grid
 The program displays a grid consisting of two mazes that mirror each other, if you mazefy one of them, the maze is copied to the other one too.
+https://github.com/goerll/MazeTrix/assets/90577512/88f48e2e-71fa-4861-a546-4469ecf8cde7
 
 ### Pathfinders
 Each maze has a pathfinder and they also mimick each other, but the pathfinder on the left maze will always find it's way to other positions through the depth first search algorithm, and the one on the right will always use breadth first search, let's see who get's there faster!
+https://github.com/goerll/MazeTrix/assets/90577512/ce7bd07c-e39c-4909-af2e-2c771a18b29d
 
 ## Usage
 ### Compiling and Running
