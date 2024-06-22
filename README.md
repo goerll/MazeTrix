@@ -32,7 +32,7 @@ https://github.com/goerll/MazeTrix/assets/90577512/ce7bd07c-e39c-4909-af2e-2c771
 ### Compiling and Running
 ``` bash
 # Compile
-Cmake .
+cmake .
 make
 # Run
 ./bin/MazeTrix
