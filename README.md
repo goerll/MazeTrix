@@ -19,10 +19,13 @@ The goal of this project is to provide a  **cool looking**, real-time visualizat
 ## Features
 ### Maze Grid
 The program displays a grid consisting of two mazes that mirror each other, if you mazefy one of them, the maze is copied to the other one too.
+
 https://github.com/goerll/MazeTrix/assets/90577512/88f48e2e-71fa-4861-a546-4469ecf8cde7
 
+
 ### Pathfinders
-Each maze has a pathfinder and they also mimick each other, but the pathfinder on the left maze will always find it's way to other positions through the depth first search algorithm, and the one on the right will always use breadth first search, let's see who get's there faster!
+Each maze has a pathfinder and they also mimick each other, but the pathfinder on the left maze will always find it's way to other positions through the depth first search algorithm, and the one on the right will always use breadth first search, see who get's there faster!
+
 https://github.com/goerll/MazeTrix/assets/90577512/ce7bd07c-e39c-4909-af2e-2c771a18b29d
 
 ## Usage
@@ -39,8 +42,8 @@ make
 | - | - | - |
 | <kbd>D</kbd> | - | Generates maze with depth first search starting on the cell at mouse |
 | <kbd>B</kbd> | - | Generates maze using the binary tree algorithm on the maze at mouse |
-| <kbd>P</kbd> | <kbd>LMB</kbd> | Place pathfinders at cell at mouse |
-| <kbd>O</kbd> | <kbd>RMB</kbd> | Make pathfinders find their way to where the mouse is |
+| <kbd>P</kbd> | <kbd>🖱️ LMB</kbd> | Place pathfinders at cell at mouse |
+| <kbd>O</kbd> | <kbd>🖱️ RMB</kbd> | Make pathfinders find their way to where the mouse is |
 
 ## Project Structure
 ```mermaid
@@ -139,18 +142,7 @@ classDiagram
         void setPathfinderPosition()
         void findWay()
     }
-
-    class Vector2i {
-        int x
-        int y
-
-        bool operator==(const Vector2i &) const
-        bool operator!=(const Vector2i &) const
-    }
 ```
-
-### 
-
 
 ## Algorithms Used
 ### Generation
