@@ -35,6 +35,3 @@ constexpr Color PATHFINDER_COLOR = (Color){0,255,232, 255};
 
 // ENUM
 enum Direction {up, right, down, left};
-
-// Random ENUM
-Direction random_dir();

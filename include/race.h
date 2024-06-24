@@ -5,6 +5,7 @@
 
 class Race {
     private:
+        // Grid of mazes
         std::vector<Maze*> mazeGrid;
 
     public:
